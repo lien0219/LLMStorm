@@ -67,6 +67,10 @@ class RequestResult:
     output_chars: int
     error: str | None = None
     preview: str = ""
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cache_read_tokens: int = 0
+    cache_write_tokens: int = 0
 
 
 MESSAGES = {
@@ -224,6 +228,10 @@ def extract_stream_text(provider: str, chunk: dict[str, Any]) -> str:
     return get_adapter(provider).extract_text(chunk)
 
 
+def extract_stream_usage(provider: str, chunk: dict[str, Any]) -> dict[str, int]:
+    return get_adapter(provider).extract_usage(chunk)
+
+
 def extract_error(body: str, reason: str | None = None, fallback: str = "Upstream error") -> str:
     compact = body.strip()
     try:
@@ -257,6 +265,12 @@ async def run_request(
     output_chars_seen = 0
     output_limit_reached = False
     status: int | str = "EXCEPTION"
+    usage = {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0}
+
+    def update_usage(chunk: dict[str, Any]) -> None:
+        for key, value in extract_stream_usage(config.provider, chunk).items():
+            if key in usage and isinstance(value, int) and value >= 0:
+                usage[key] = max(usage[key], value)
 
     try:
         async with session.post(endpoint, headers=headers, json=payload) as response:
@@ -298,6 +312,7 @@ async def run_request(
                         chunk = json.loads(data)
                     except json.JSONDecodeError:
                         continue
+                    update_usage(chunk)
                     text = extract_stream_text(config.provider, chunk)
                     if text:
                         if ttft is None:
@@ -315,7 +330,9 @@ async def run_request(
             if tail:
                 data = tail[5:].strip() if tail.startswith("data:") else tail
                 try:
-                    text = extract_stream_text(config.provider, json.loads(data))
+                    chunk = json.loads(data)
+                    update_usage(chunk)
+                    text = extract_stream_text(config.provider, chunk)
                     if text:
                         if ttft is None:
                             ttft = time.perf_counter() - started
@@ -343,6 +360,10 @@ async def run_request(
                 ttft,
                 len(output),
                 preview=output[:160],
+                input_tokens=usage["input"],
+                output_tokens=usage["output"],
+                cache_read_tokens=usage["cacheRead"],
+                cache_write_tokens=usage["cacheWrite"],
             )
     except TimeoutError:
         return RequestResult(
@@ -386,6 +407,12 @@ def summarize_stage(
     ttfts = [item.ttft for item in successes if item.ttft is not None]
     success_count = len(successes)
     total = len(results)
+    usage = {
+        "input": sum(item.input_tokens for item in successes),
+        "output": sum(item.output_tokens for item in successes),
+        "cacheRead": sum(item.cache_read_tokens for item in successes),
+        "cacheWrite": sum(item.cache_write_tokens for item in successes),
+    }
     return {
         "concurrency": concurrency,
         "requests": total,
@@ -404,6 +431,7 @@ def summarize_stage(
             if not item.success
         ][:10],
         "sampleOutput": next((item.preview for item in successes if item.preview), ""),
+        "usage": usage,
     }
 
 
@@ -450,6 +478,7 @@ def build_final_summary(
     success_count = sum(1 for item in results if item.success)
     total = len(results)
     all_latencies = [item.latency for item in results if item.success]
+    successful_results = [item for item in results if item.success]
     return {
         "provider": config.provider,
         "model": config.model,
@@ -468,6 +497,12 @@ def build_final_summary(
         "wallTime": wall_time,
         "peakThroughput": max((stage["throughput"] for stage in stages), default=0),
         "p95Latency": percentile(all_latencies, 0.95),
+        "usage": {
+            "input": sum(item.input_tokens for item in successful_results),
+            "output": sum(item.output_tokens for item in successful_results),
+            "cacheRead": sum(item.cache_read_tokens for item in successful_results),
+            "cacheWrite": sum(item.cache_write_tokens for item in successful_results),
+        },
         "stages": stages,
         "failures": [asdict(item) for item in results if not item.success][:30],
     }

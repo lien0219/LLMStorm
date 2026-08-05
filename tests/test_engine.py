@@ -10,6 +10,7 @@ from load_test_engine import (
     build_final_summary,
     concurrency_levels,
     extract_stream_text,
+    extract_stream_usage,
     request_spec,
     resolve_endpoint,
     validate_config,
@@ -134,6 +135,35 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(
             extract_stream_text("openai", {"choices": [{"delta": {"content": "ok"}}]}),
             "ok",
+        )
+
+    def test_protocol_usage_extractors(self) -> None:
+        self.assertEqual(
+            extract_stream_usage(
+                "openai",
+                {
+                    "usage": {
+                        "prompt_tokens": 20,
+                        "completion_tokens": 5,
+                        "prompt_tokens_details": {"cached_tokens": 8},
+                    }
+                },
+            ),
+            {"input": 20, "output": 5, "cacheRead": 8, "cacheWrite": 0},
+        )
+        self.assertEqual(
+            extract_stream_usage(
+                "anthropic",
+                {
+                    "usage": {
+                        "input_tokens": 12,
+                        "output_tokens": 3,
+                        "cache_creation_input_tokens": 4,
+                        "cache_read_input_tokens": 6,
+                    }
+                },
+            ),
+            {"input": 12, "output": 3, "cacheRead": 6, "cacheWrite": 4},
         )
         self.assertEqual(
             extract_stream_text("anthropic", {"delta": {"text": "ok"}}),

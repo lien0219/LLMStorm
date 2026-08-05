@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LLMStorm AI 产品、创作工具、自动化服务与第三方 AI 店铺目录。">
+  <meta name="theme-color" content="#080b0c">
+  <meta name="color-scheme" content="dark">
+  <title>AI 服务 · LLMStorm</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body data-meta-title="aiServicesMetaTitle" data-meta-description="aiServicesMetaDescription">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="LLMStorm 首页" data-i18n-aria="homeAria">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M18.7 2 7 17.2h8.2L12.8 30 25 13.6h-8.1L18.7 2Z"/></svg></span>
+      <span>LLM<span>STORM</span></span>
+    </a>
+    <nav class="primary-nav" aria-label="主导航" data-i18n-aria="mainNavigation">
+      <a href="/"><span></span><b data-i18n="navLoadTest">压测工具</b></a>
+      <a href="/sites"><span></span><b data-i18n="navSites">站点推荐</b></a>
+      <a class="active" href="/ai-services" aria-current="page"><span></span><b data-i18n="navAiServices">AI 服务</b></a>
+    </nav>
+    <div class="header-actions">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-locale="zh" aria-pressed="true">中</button>
+        <button type="button" data-locale="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="directory-main">
+    <section class="directory-hero" aria-labelledby="directory-title">
+      <div class="directory-hero-copy">
+        <div class="directory-eyebrow" data-i18n="aiDirectoryEyebrow">AI SERVICE INDEX</div>
+        <h1 id="directory-title" data-i18n="aiDirectoryTitle">AI 服务</h1>
+      </div>
+    </section>
+
+    <section class="recommendation-browser" aria-labelledby="ai-service-list-title">
+      <div class="recommendation-heading">
+        <div><span>SERVICE INDEX</span><h2 id="ai-service-list-title" data-i18n="aiServiceListTitle">AI 服务目录</h2></div>
+      </div>
+      <div class="recommendation-toolbar ai-service-toolbar">
+        <label class="recommendation-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+          <input id="ai-service-search" type="search" data-i18n-placeholder="aiServiceSearchPlaceholder" placeholder="搜索产品、场景或能力">
+        </label>
+        <div id="ai-service-filters" class="recommendation-filters ai-service-filters" role="group" aria-label="AI 服务分类" data-i18n-aria="aiServiceFiltersAria">
+          <button class="active" type="button" data-category="all" data-i18n="aiServiceFilterAll">全部</button>
+          <button type="button" data-category="assistant" data-i18n="aiServiceFilterAssistant">通用助手</button>
+          <button type="button" data-category="coding" data-i18n="aiServiceFilterCoding">AI 编程</button>
+          <button type="button" data-category="creative" data-i18n="aiServiceFilterCreative">图像音视频</button>
+          <button type="button" data-category="productivity" data-i18n="aiServiceFilterProductivity">效率自动化</button>
+          <button type="button" data-category="shop" data-i18n="aiServiceFilterShop">第三方店铺</button>
+        </div>
+      </div>
+      <div class="recommendation-meta"><span id="ai-service-result-count">—</span><small data-i18n="aiServicePageSize">每页 9 项</small></div>
+      <div id="ai-service-grid" class="recommendation-grid"></div>
+      <div id="ai-service-empty" class="recommendation-empty is-hidden" data-i18n="aiServiceEmpty">没有匹配的 AI 服务</div>
+      <nav class="recommendation-pagination" aria-label="分页" data-i18n-aria="aiServicePaginationAria">
+        <button id="ai-service-prev" type="button" data-i18n-aria="aiServicePrevious" aria-label="上一页"><span>←</span></button>
+        <div id="ai-service-pages"></div>
+        <button id="ai-service-next" type="button" data-i18n-aria="aiServiceNext" aria-label="下一页"><span>→</span></button>
+      </nav>
+    </section>
+  </main>
+
+  <footer><span>LLMSTORM / AI SERVICE INDEX</span><span data-i18n="aiServiceFooter">AI 服务公开信息目录</span></footer>
+  <script src="/static/i18n.js" defer></script>
+  <script type="module" src="/static/ai-services.js"></script>
+</body>
+</html>

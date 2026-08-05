@@ -84,6 +84,8 @@ sudo docker compose --env-file .env.production -f compose.production.yaml ps
 | `LLMSTORM_PUBLIC_MODE` | `1` | 开启 HTTPS 限制和 SSRF 防护 |
 | `LLMSTORM_MAX_CONCURRENCY` | `500` | 单次测试最大并发 |
 | `LLMSTORM_MAX_ACTIVE_TESTS` | `2` | 全局同时测试任务数 |
+| `LLMSTORM_PRICING_CACHE_SECONDS` | `21600` | 在线模型价格缓存时间 |
+| `LLMSTORM_PRICING_TIMEOUT_SECONDS` | `12` | 在线价格刷新超时时间 |
 
 ## 反向代理要求
 

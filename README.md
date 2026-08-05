@@ -34,7 +34,7 @@ LLMStorm 从单请求开始逐档提升压力，把中转站的**成功率、吞
   </tr>
   <tr>
     <td valign="top"><strong>🔌 多协议适配</strong><br><sub>原生支持 OpenAI Chat Completions、Anthropic Messages 与 Gemini 流式协议。</sub></td>
-    <td valign="top"><strong>🧩 可持续扩展</strong><br><sub>厂商适配器、模型目录、压测策略和前端渲染相互解耦。</sub></td>
+    <td valign="top"><strong>💰 价格对比</strong><br><sub>在线刷新模型价格，对照中转站输入、输出和缓存单价，并按真实 Token 用量估算成本。</sub></td>
     <td valign="top"><strong>🛡️ 本地优先</strong><br><sub>Key 仅在单次请求内存中使用，不写入日志、文件或浏览器存储。</sub></td>
   </tr>
 </table>

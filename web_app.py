@@ -24,6 +24,8 @@ from llmstorm.policy import (
     DEFAULT_SUCCESS_THRESHOLD,
     MAX_OUTPUT_TOKENS,
 )
+from llmstorm.pricing import DEFAULT_CATALOG_URL, PricingService
+from llmstorm.site_probe import probe_site
 from load_test_engine import (
     TestConfig,
     build_final_summary,
@@ -40,6 +42,8 @@ VERSION = __version__
 
 SETTINGS_KEY = web.AppKey("settings", dict)
 TEST_SEMAPHORE_KEY = web.AppKey("test_semaphore", asyncio.Semaphore)
+PRICING_SERVICE_KEY = web.AppKey("pricing_service", PricingService)
+ANALYSIS_SEMAPHORE_KEY = web.AppKey("analysis_semaphore", asyncio.Semaphore)
 
 WEB_MESSAGES = {
     "zh": {
@@ -121,6 +125,14 @@ async def index(_: web.Request) -> web.FileResponse:
     return web.FileResponse(STATIC_DIR / "index.html")
 
 
+async def site_recommendations(_: web.Request) -> web.FileResponse:
+    return web.FileResponse(STATIC_DIR / "sites.html")
+
+
+async def ai_services(_: web.Request) -> web.FileResponse:
+    return web.FileResponse(STATIC_DIR / "ai-services.html")
+
+
 async def health(_: web.Request) -> web.Response:
     return web.json_response({"ok": True, "service": "LLMStorm", "version": VERSION})
 
@@ -142,6 +154,59 @@ async def public_config(request: web.Request) -> web.Response:
 
 async def model_catalog(_: web.Request) -> web.Response:
     return web.json_response(load_catalog())
+
+
+async def model_pricing(request: web.Request) -> web.Response:
+    provider = request.query.get("provider", "")
+    model = request.query.get("model", "")
+    if not provider.strip() or not model.strip():
+        return web.json_response(
+            {"error": "provider and model are required"},
+            status=400,
+        )
+    result = await request.app[PRICING_SERVICE_KEY].lookup(provider, model)
+    return web.json_response(result)
+
+
+async def site_analysis(request: web.Request) -> web.Response:
+    acquired_slot = False
+    try:
+        data = await request.json(loads=json.loads)
+        if not isinstance(data, dict):
+            raise ValueError("Request body must be a JSON object")
+        config = parse_config(
+            {
+                **data,
+                "apiKey": "",
+                "maxConcurrency": 1,
+                "timeout": 10,
+                "maxTokens": 1,
+            },
+            request.app[SETTINGS_KEY],
+        )
+        endpoint = resolve_endpoint(config.url, config.provider, config.model)
+        try:
+            await asyncio.wait_for(
+                request.app[ANALYSIS_SEMAPHORE_KEY].acquire(),
+                timeout=0.05,
+            )
+            acquired_slot = True
+        except TimeoutError:
+            return web.json_response({"error": "Too many site analyses are running"}, status=429)
+        result = await probe_site(
+            endpoint,
+            allow_private_targets=config.allow_private_targets,
+            insecure=config.insecure,
+            locale=config.locale,
+        )
+        return web.json_response(result)
+    except (json.JSONDecodeError, TypeError, ValueError) as error:
+        return web.json_response({"error": str(error)}, status=400)
+    except Exception as error:
+        return web.json_response({"error": f"Site analysis failed: {error}"}, status=502)
+    finally:
+        if acquired_slot:
+            request.app[ANALYSIS_SEMAPHORE_KEY].release()
 
 
 def parse_config(data: dict[str, Any], settings: dict[str, Any]) -> TestConfig:
@@ -317,6 +382,7 @@ def create_app(
     public_mode: bool | None = None,
     max_concurrency: int | None = None,
     max_active_tests: int | None = None,
+    pricing_service: PricingService | None = None,
 ) -> web.Application:
     resolved_public_mode = (
         env_bool("LLMSTORM_PUBLIC_MODE", False) if public_mode is None else public_mode
@@ -341,10 +407,21 @@ def create_app(
     )
     app[SETTINGS_KEY] = settings
     app[TEST_SEMAPHORE_KEY] = asyncio.Semaphore(settings["max_active_tests"])
+    app[ANALYSIS_SEMAPHORE_KEY] = asyncio.Semaphore(4)
+    app[PRICING_SERVICE_KEY] = pricing_service or PricingService(
+        catalog_url=os.getenv("LLMSTORM_PRICING_CATALOG_URL", "").strip()
+        or DEFAULT_CATALOG_URL,
+        ttl_seconds=env_int("LLMSTORM_PRICING_CACHE_SECONDS", 21600, 60, 604800),
+        timeout_seconds=env_int("LLMSTORM_PRICING_TIMEOUT_SECONDS", 12, 1, 60),
+    )
     app.router.add_get("/", index)
+    app.router.add_get("/sites", site_recommendations)
+    app.router.add_get("/ai-services", ai_services)
     app.router.add_get("/api/health", health)
     app.router.add_get("/api/config", public_config)
     app.router.add_get("/api/catalog", model_catalog)
+    app.router.add_get("/api/pricing", model_pricing)
+    app.router.add_post("/api/site-analysis", site_analysis)
     app.router.add_post("/api/test", run_test)
     app.router.add_static("/static/", STATIC_DIR, show_index=False)
     return app

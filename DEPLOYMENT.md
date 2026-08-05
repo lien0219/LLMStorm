@@ -90,6 +90,8 @@ Configuration is retained because it lives in `.env.production`, not the image.
 | `LLMSTORM_PUBLIC_MODE` | `1` | HTTPS enforcement and SSRF protection |
 | `LLMSTORM_MAX_CONCURRENCY` | `500` | Per-test concurrency ceiling |
 | `LLMSTORM_MAX_ACTIVE_TESTS` | `2` | Global simultaneous test jobs |
+| `LLMSTORM_PRICING_CACHE_SECONDS` | `21600` | Online model-price cache lifetime |
+| `LLMSTORM_PRICING_TIMEOUT_SECONDS` | `12` | Online price refresh timeout |
 
 ## Reverse proxy requirements
 

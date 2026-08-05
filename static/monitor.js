@@ -218,6 +218,7 @@ export function createMonitor({ t, getLocale }) {
         $("#stage-counter").textContent = `${payload.stages.length} / ${payload.stages.length}`;
         renderSummary(payload, true);
         setStatus("complete", "statusComplete");
+        window.dispatchEvent(new CustomEvent("llmstorm:testcomplete", { detail: payload }));
         break;
       case "error":
         throw new Error(payload.message || t("statusError"));

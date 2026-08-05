@@ -36,3 +36,14 @@ class GeminiAdapter(ProviderAdapter):
             for part in parts
             if isinstance(part, dict) and isinstance(part.get("text"), str)
         )
+
+    def extract_usage(self, chunk: dict[str, Any]) -> dict[str, int]:
+        usage = chunk.get("usageMetadata")
+        if not isinstance(usage, dict):
+            return {}
+        return {
+            "input": int(usage.get("promptTokenCount") or 0),
+            "output": int(usage.get("candidatesTokenCount") or 0),
+            "cacheRead": int(usage.get("cachedContentTokenCount") or 0),
+            "cacheWrite": 0,
+        }

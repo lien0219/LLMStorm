@@ -34,6 +34,11 @@ class ProviderAdapter(ABC):
     def extract_text(self, chunk: dict[str, Any]) -> str:
         """Extract text from one decoded streaming or JSON response chunk."""
 
+    def extract_usage(self, chunk: dict[str, Any]) -> dict[str, int]:
+        """Extract cumulative token counters when the protocol exposes them."""
+        del chunk
+        return {}
+
 
 def split_endpoint(raw_url: str) -> tuple[str, SplitResult, str, str, bool]:
     """Normalize an endpoint and describe whether its path is a conventional base."""

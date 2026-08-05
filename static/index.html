@@ -21,12 +21,16 @@
       </span>
       <span>LLM<span>STORM</span></span>
     </a>
+    <nav class="primary-nav" aria-label="主导航" data-i18n-aria="mainNavigation">
+      <a class="active" href="/" aria-current="page"><span></span><b data-i18n="navLoadTest">压测工具</b></a>
+      <a href="/sites"><span></span><b data-i18n="navSites">站点推荐</b></a>
+      <a href="/ai-services"><span></span><b data-i18n="navAiServices">AI 服务</b></a>
+    </nav>
     <div class="header-actions">
       <div class="language-switch" role="group" aria-label="Language">
         <button type="button" data-locale="zh" aria-pressed="true">中</button>
         <button type="button" data-locale="en" aria-pressed="false">EN</button>
       </div>
-      <div class="local-badge"><span></span><b data-i18n="localBadge">本地运行 · Key 不落盘</b></div>
     </div>
   </header>
 
@@ -218,6 +222,129 @@
           </section>
         </div>
       </article>
+    </section>
+
+    <section class="panel analysis-panel" aria-labelledby="analysis-title">
+      <div class="panel-heading">
+        <div><span class="step-index">03</span><h2 id="analysis-title" data-i18n="analysisTitle">站点质量与链路分析</h2></div>
+        <div id="analysis-status" class="status-badge idle"><span></span><b data-i18n="analysisWaiting">等待检测</b></div>
+      </div>
+      <div class="analysis-body">
+        <section class="quality-result">
+          <div class="analysis-section-heading">
+            <div><h3 data-i18n="siteQualityTitle">网站质量测试</h3></div>
+            <button id="run-site-analysis" class="outline-button" type="button" disabled>
+              <span class="analysis-button-idle" data-i18n="runSiteAnalysis">检测站点</span>
+              <span class="analysis-button-running"><i></i><b data-i18n="analysisRunning">检测中</b></span>
+            </button>
+          </div>
+          <div class="quality-overview">
+            <div class="quality-score"><strong id="quality-score">—</strong><span>/ 100</span></div>
+            <div><b id="quality-score-label" data-i18n="analysisNotTested">尚未检测</b><small data-i18n="analysisSingleSample">单次链路样本</small></div>
+          </div>
+          <div class="quality-metrics">
+            <div><span>DNS</span><strong id="quality-dns">—</strong></div>
+            <div><span>TCP</span><strong id="quality-tcp">—</strong></div>
+            <div><span>TLS</span><strong id="quality-tls">—</strong></div>
+            <div><span>TTFB</span><strong id="quality-ttfb">—</strong></div>
+            <div><span>HTTP</span><strong id="quality-http">—</strong></div>
+            <div><span data-i18n="analysisCertificate">证书有效期</span><strong id="quality-certificate">—</strong></div>
+          </div>
+          <div class="ip-details-wrap">
+            <div class="ip-details-title"><span data-i18n="analysisIpDetails">IP 地址与归属</span><small data-i18n="analysisIpDetailsLimit">最多查询 4 个解析地址</small></div>
+            <div id="ip-details-list" class="ip-details-list"><p data-i18n="analysisNoIpDetails">检测后显示 IP 明细</p></div>
+          </div>
+          <p id="quality-error" class="analysis-error is-hidden"></p>
+        </section>
+
+        <section class="route-result">
+          <div class="analysis-section-heading">
+            <div><h3 data-i18n="routeAnalysisTitle">中转上游定位</h3></div>
+          </div>
+          <div class="route-summary">
+            <div><span data-i18n="analysisTargetHost">当前目标</span><strong id="route-target">—</strong></div>
+            <div class="route-upstream"><span data-i18n="analysisUpstreamResult">上游结果</span><strong id="route-upstream-text" data-i18n="analysisNotTested">尚未检测</strong><a id="route-upstream-link" class="is-hidden" target="_blank" rel="noreferrer"></a></div>
+            <div><span data-i18n="analysisInfrastructure">基础设施</span><strong id="route-infrastructure">—</strong></div>
+            <div><span data-i18n="analysisProxySignals">代理跳数信号</span><strong id="route-proxy-signals">0</strong></div>
+          </div>
+          <div class="route-evidence-wrap">
+            <div class="route-evidence-title"><span data-i18n="analysisEvidence">公开证据</span><small data-i18n="analysisEvidenceLimit">最多显示 12 条安全响应头</small></div>
+            <ul id="route-evidence"><li class="empty-evidence" data-i18n="analysisNoEvidence">检测后显示链路线索</li></ul>
+          </div>
+        </section>
+      </div>
+      <aside class="analysis-disclaimer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>
+        <p data-i18n="analysisDisclaimer">多层中转的真实服务端下一跳通常对客户端不可见。仅当响应明确暴露上游 URL 时才显示网址；厂商推断和代理信号不能作为归属证明。IP 位置来自第三方数据库估算，CDN 地址通常代表边缘节点而非源站。</p>
+      </aside>
+    </section>
+
+    <section class="panel pricing-panel" aria-labelledby="pricing-title">
+      <div class="panel-heading">
+        <div><span class="step-index">04</span><h2 id="pricing-title" data-i18n="pricingTitle">价格对比</h2></div>
+        <div id="pricing-status" class="status-badge idle"><span></span><b data-i18n="pricingWaiting">等待模型</b></div>
+      </div>
+      <div class="pricing-body">
+        <section class="relay-pricing-editor">
+          <div class="pricing-section-heading">
+            <div>
+              <h3 data-i18n="relayPricingTitle">中转站定价</h3>
+              <p data-i18n="relayPricingHelp">填写该模型的 Token 单价，系统自动计算与参考价格的差价及倍率。</p>
+            </div>
+            <button id="use-official-prices" class="outline-button" type="button" data-i18n="useOfficialPrices">按官方价填入</button>
+          </div>
+          <div class="pricing-model-row">
+            <span data-i18n="currentPricingModel">当前模型</span>
+            <strong id="pricing-model">—</strong>
+            <small>USD / MTok</small>
+          </div>
+          <div class="price-input-grid">
+            <label><span data-i18n="priceInput">输入</span><span class="price-input-shell"><b>$</b><input id="relay-price-input" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></span></label>
+            <label><span data-i18n="priceOutput">输出</span><span class="price-input-shell"><b>$</b><input id="relay-price-output" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></span></label>
+            <label><span data-i18n="priceCacheWrite">缓存写入</span><span class="price-input-shell"><b>$</b><input id="relay-price-cache-write" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></span></label>
+            <label><span data-i18n="priceCacheRead">缓存读取</span><span class="price-input-shell"><b>$</b><input id="relay-price-cache-read" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></span></label>
+          </div>
+          <div class="relay-tier-heading">
+            <div><strong data-i18n="contextTierPricing">上下文区间定价</strong><small data-i18n="contextTierHelp">可选；按请求输入上下文长度匹配</small></div>
+            <button id="add-pricing-tier" type="button" data-i18n="addPricingTier">＋ 添加区间</button>
+          </div>
+          <div id="relay-tier-list" class="relay-tier-list"></div>
+        </section>
+
+        <section class="official-pricing-result">
+          <div class="pricing-section-heading">
+            <div>
+              <h3 data-i18n="officialPricingTitle">官方参考价对照</h3>
+              <p id="pricing-source-text" data-i18n="pricingLoading">正在获取最新价格…</p>
+            </div>
+            <div class="pricing-source-actions">
+              <select id="pricing-tier-view" aria-label="价格区间" data-i18n-aria="pricingTierAria"><option value="base" data-i18n="defaultPricingTier">默认价格</option></select>
+              <a id="official-price-link" class="source-link is-hidden" href="#" target="_blank" rel="noreferrer" data-i18n="viewOfficialSource">查看官方来源</a>
+            </div>
+          </div>
+          <p class="pricing-source-disclosure" data-i18n="pricingSourceDisclosure">在线价来自机器价格目录，并非每次直接抓取厂商官网；目录不可用或校验冲突时会改用标注日期的本地快照。</p>
+          <div class="pricing-table-wrap">
+            <table class="pricing-table">
+              <thead><tr><th data-i18n="priceItem">计费项</th><th data-i18n="relayPrice">中转价</th><th data-i18n="officialPrice">官方价</th><th data-i18n="priceDelta">差价</th><th data-i18n="priceMultiple">倍率</th></tr></thead>
+              <tbody id="pricing-compare-body"></tbody>
+            </table>
+          </div>
+          <p id="pricing-derived-note" class="pricing-derived-note is-hidden" data-i18n="cacheWriteDerived">* 官方未单列缓存写入价，按普通输入价计入。</p>
+          <div id="usage-cost-card" class="usage-cost-card is-hidden">
+            <div><span data-i18n="actualUsage">本次压测用量</span><strong id="actual-usage-value">—</strong></div>
+            <div><span data-i18n="relayEstimatedCost">中转站估算</span><strong id="relay-estimated-cost">—</strong></div>
+            <div><span data-i18n="officialEstimatedCost">官方估算</span><strong id="official-estimated-cost">—</strong></div>
+            <small id="usage-cost-note" data-i18n="usageUnavailable">上游未返回 token usage，暂时无法核算本次成本。</small>
+          </div>
+        </section>
+      </div>
+      <aside class="pricing-disclaimer">
+        <div class="pricing-disclaimer-title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.7 20h18.6L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>
+          <strong data-i18n="pricingDisclaimerTitle">价格说明</strong>
+        </div>
+        <p data-i18n="pricingDisclaimer">本页面数据和估算结果仅供参考，不构成报价、结算依据或购买建议。实际费用以厂商和服务提供方账单为准，并可能受币种、汇率、税费、服务等级、长上下文、缓存策略及工具调用等因素影响。</p>
+      </aside>
     </section>
   </main>
 

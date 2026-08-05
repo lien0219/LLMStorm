@@ -36,6 +36,7 @@ class OpenAICompatibleAdapter(ProviderAdapter):
             "messages": [{"role": "user", "content": context.prompt}],
             token_field: context.max_tokens,
             "stream": True,
+            "stream_options": {"include_usage": True},
         }
 
     def extract_text(self, chunk: dict[str, Any]) -> str:
@@ -56,3 +57,16 @@ class OpenAICompatibleAdapter(ProviderAdapter):
         if isinstance(result, dict) and isinstance(result.get("content"), str):
             return result["content"]
         return ""
+
+    def extract_usage(self, chunk: dict[str, Any]) -> dict[str, int]:
+        usage = chunk.get("usage")
+        if not isinstance(usage, dict):
+            return {}
+        details = usage.get("prompt_tokens_details")
+        details = details if isinstance(details, dict) else {}
+        return {
+            "input": int(usage.get("prompt_tokens") or usage.get("input_tokens") or 0),
+            "output": int(usage.get("completion_tokens") or usage.get("output_tokens") or 0),
+            "cacheRead": int(details.get("cached_tokens") or 0),
+            "cacheWrite": int(details.get("cache_write_tokens") or 0),
+        }

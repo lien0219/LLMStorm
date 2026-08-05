@@ -34,7 +34,7 @@ LLMStorm progressively increases pressure from a single request and turns **succ
   </tr>
   <tr>
     <td valign="top"><strong>🔌 Multi-protocol</strong><br><sub>Native OpenAI Chat Completions, Anthropic Messages, and Gemini streaming support.</sub></td>
-    <td valign="top"><strong>🧩 Designed to extend</strong><br><sub>Provider adapters, model catalog, benchmark policy, and UI rendering evolve independently.</sub></td>
+    <td valign="top"><strong>💰 Price comparison</strong><br><sub>Refresh model prices online, compare relay input/output/cache rates, and estimate cost from actual token usage.</sub></td>
     <td valign="top"><strong>🛡️ Local first</strong><br><sub>Keys stay in request memory and are never written to logs, files, or browser storage.</sub></td>
   </tr>
 </table>

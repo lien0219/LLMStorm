@@ -3,6 +3,8 @@
 import { fetchBootstrap, streamTest } from "./api.js";
 import { getProvider, populateModels, populateProviders, setCatalog } from "./catalog.js";
 import { createMonitor } from "./monitor.js";
+import { createPricingComparison } from "./pricing.js";
+import { createSiteAnalysis } from "./site-analysis.js";
 
 const { t, getLocale } = window.LLMStormI18n;
 const $ = (selector) => document.querySelector(selector);
@@ -16,7 +18,19 @@ const customModelShell = $("#custom-model-shell");
 const concurrencyInput = $("#concurrency");
 const concurrencyRange = $("#concurrency-range");
 const startButton = $("#start-button");
+const pricing = createPricingComparison({ t, getLocale });
 const monitor = createMonitor({ t, getLocale });
+const siteAnalysis = createSiteAnalysis({
+  t,
+  getLocale,
+  showToast,
+  getConfig: () => ({
+    url: $("#url").value.trim(),
+    provider: providerSelect.value,
+    model: selectedModel(),
+    insecure: $("#insecure").checked
+  })
+});
 
 let controller = null;
 let catalogReady = false;
@@ -141,6 +155,7 @@ function renderModels(preserveSelection = false) {
     leaveCustomModel();
   }
   updateUrlPlaceholder();
+  pricing.setModel(providerSelect.value, selectedModel());
 }
 
 function renderCatalog(preserveSelection = false) {
@@ -193,6 +208,7 @@ async function startTest() {
   };
 
   try {
+    void siteAnalysis.run({ quiet: true });
     await streamTest(payload, controller.signal, monitor.handleEvent);
     if (!monitor.hasResult()) throw new Error(t("incompleteStream"));
   } catch (error) {
@@ -247,6 +263,7 @@ async function loadApplication() {
     providerSelect.disabled = false;
     modelSelect.disabled = false;
     startButton.disabled = false;
+    siteAnalysis.setEnabled(true);
     monitor.setSuccessThreshold(successThreshold);
     renderCatalog();
     renderRangeScale();
@@ -262,10 +279,20 @@ async function loadApplication() {
 providerSelect.addEventListener("change", () => renderModels());
 modelSelect.addEventListener("change", () => {
   if (modelSelect.value === "__custom__") enterCustomModel();
+  pricing.setModel(providerSelect.value, selectedModel());
 });
 $("#back-to-models").addEventListener("click", () => {
   modelSelect.selectedIndex = 0;
   leaveCustomModel();
+  pricing.setModel(providerSelect.value, selectedModel());
+});
+let customPricingTimer = null;
+customModel.addEventListener("input", () => {
+  clearTimeout(customPricingTimer);
+  customPricingTimer = setTimeout(
+    () => pricing.setModel(providerSelect.value, selectedModel()),
+    350
+  );
 });
 concurrencyRange.addEventListener("input", (event) => updateFromRange(event.target.value));
 concurrencyInput.addEventListener("input", (event) => updateFromNumber(event.target.value));
@@ -304,8 +331,14 @@ window.addEventListener("llmstorm:localechange", () => {
   }
   refreshRuntimeTexts();
   monitor.refreshLocale();
+  pricing.refreshLocale();
+  siteAnalysis.refreshLocale();
   const keyVisible = $("#api-key").type === "text";
   $("#toggle-key").setAttribute("aria-label", t(keyVisible ? "keyHide" : "keyShow"));
+});
+
+window.addEventListener("llmstorm:testcomplete", (event) => {
+  pricing.setUsage(event.detail?.usage);
 });
 
 startButton.disabled = true;

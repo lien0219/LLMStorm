@@ -19,6 +19,23 @@ export async function fetchBootstrap() {
   };
 }
 
+export async function fetchPricing(provider, model) {
+  const query = new URLSearchParams({ provider, model });
+  const response = await fetch(`/api/pricing?${query}`, {
+    headers: { Accept: "application/json" }
+  });
+  return readJson(response);
+}
+
+export async function fetchSiteAnalysis(payload) {
+  const response = await fetch("/api/site-analysis", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(payload)
+  });
+  return readJson(response);
+}
+
 function dispatchBlock(block, onEvent) {
   let event = "message";
   const data = [];
@@ -57,4 +74,3 @@ export async function streamTest(payload, signal, onEvent) {
   }
   if (buffer.trim()) dispatchBlock(buffer, onEvent);
 }
-

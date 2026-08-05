@@ -48,3 +48,17 @@ class AnthropicAdapter(ProviderAdapter):
                 if isinstance(block, dict) and isinstance(block.get("text"), str)
             )
         return ""
+
+    def extract_usage(self, chunk: dict[str, Any]) -> dict[str, int]:
+        usage = chunk.get("usage")
+        message = chunk.get("message")
+        if not isinstance(usage, dict) and isinstance(message, dict):
+            usage = message.get("usage")
+        if not isinstance(usage, dict):
+            return {}
+        return {
+            "input": int(usage.get("input_tokens") or 0),
+            "output": int(usage.get("output_tokens") or 0),
+            "cacheRead": int(usage.get("cache_read_input_tokens") or 0),
+            "cacheWrite": int(usage.get("cache_creation_input_tokens") or 0),
+        }

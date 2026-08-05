@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LLMStorm 精选站点与实用资源导航。">
+  <meta name="theme-color" content="#080b0c">
+  <meta name="color-scheme" content="dark">
+  <title>站点推荐 · LLMStorm</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body data-meta-title="siteRecommendationsMetaTitle" data-meta-description="siteRecommendationsMetaDescription">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="LLMStorm 首页" data-i18n-aria="homeAria">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M18.7 2 7 17.2h8.2L12.8 30 25 13.6h-8.1L18.7 2Z"/></svg></span>
+      <span>LLM<span>STORM</span></span>
+    </a>
+    <nav class="primary-nav" aria-label="主导航" data-i18n-aria="mainNavigation">
+      <a href="/"><span></span><b data-i18n="navLoadTest">压测工具</b></a>
+      <a class="active" href="/sites" aria-current="page"><span></span><b data-i18n="navSites">站点推荐</b></a>
+      <a href="/ai-services"><span></span><b data-i18n="navAiServices">AI 服务</b></a>
+    </nav>
+    <div class="header-actions">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-locale="zh" aria-pressed="true">中</button>
+        <button type="button" data-locale="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="directory-main">
+    <section class="directory-hero" aria-labelledby="directory-title">
+      <div class="directory-hero-copy">
+        <div class="directory-eyebrow" data-i18n="siteDirectoryEyebrow">RESOURCE DIRECTORY</div>
+        <h1 id="directory-title" data-i18n="siteDirectoryTitle">站点推荐</h1>
+      </div>
+    </section>
+
+    <section class="recommendation-browser" aria-labelledby="recommendation-list-title">
+      <div class="recommendation-heading">
+        <div><span>CURATED INDEX</span><h2 id="recommendation-list-title" data-i18n="recommendationListTitle">站点目录</h2></div>
+      </div>
+      <div class="recommendation-toolbar">
+        <label class="recommendation-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+          <input id="recommendation-search" type="search" data-i18n-placeholder="recommendationSearchPlaceholder" placeholder="搜索名称、类型或支持的模型">
+        </label>
+        <div id="recommendation-filters" class="recommendation-filters" role="group" aria-label="站点分类" data-i18n-aria="recommendationFiltersAria">
+          <button class="active" type="button" data-category="all" data-i18n="recommendationFilterAll">全部</button>
+          <button type="button" data-category="relay" data-i18n="recommendationFilterRelay">API 中转</button>
+          <button type="button" data-category="platform" data-i18n="recommendationFilterPlatform">模型平台</button>
+          <button type="button" data-category="tool" data-i18n="recommendationFilterTool">工具服务</button>
+        </div>
+      </div>
+      <div class="recommendation-meta"><span id="recommendation-result-count">—</span><small data-i18n="recommendationPageSize">每页 9 项</small></div>
+      <div id="recommendation-grid" class="recommendation-grid"></div>
+      <div id="recommendation-empty" class="recommendation-empty is-hidden" data-i18n="recommendationEmpty">没有匹配的站点</div>
+      <nav class="recommendation-pagination" aria-label="分页" data-i18n-aria="recommendationPaginationAria">
+        <button id="recommendation-prev" type="button" data-i18n-aria="recommendationPrevious" aria-label="上一页"><span>←</span></button>
+        <div id="recommendation-pages"></div>
+        <button id="recommendation-next" type="button" data-i18n-aria="recommendationNext" aria-label="下一页"><span>→</span></button>
+      </nav>
+    </section>
+  </main>
+
+  <footer><span>LLMSTORM / RESOURCE DIRECTORY</span><span data-i18n="recommendationFooter">公开信息目录 · 请独立核验</span></footer>
+  <script src="/static/i18n.js" defer></script>
+  <script type="module" src="/static/recommendations.js"></script>
+</body>
+</html>

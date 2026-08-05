@@ -16,15 +16,31 @@ async def mock_upstream(request: web.Request) -> web.StreamResponse:
     response = web.StreamResponse(headers={"Content-Type": "text/event-stream"})
     await response.prepare(request)
     await response.write(b'data: {"choices":[{"delta":{"content":"ok"}}]}\n\n')
+    await response.write(
+        b'data: {"choices":[],"usage":{"prompt_tokens":10,"completion_tokens":2,'
+        b'"prompt_tokens_details":{"cached_tokens":3}}}\n\n'
+    )
     await response.write(b"data: [DONE]\n\n")
     await response.write_eof()
     return response
+
+
+async def mock_probe(_: web.Request) -> web.Response:
+    return web.Response(
+        status=204,
+        headers={
+            "X-Upstream-URL": "https://api.openai.com/v1/chat/completions",
+            "X-OpenAI-Request-ID": "req_probe_test",
+            "Via": "1.1 relay.test",
+        },
+    )
 
 
 class WebTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
         upstream_app = web.Application()
         upstream_app.router.add_post("/v1/chat/completions", mock_upstream)
+        upstream_app.router.add_head("/v1/chat/completions", mock_probe)
         self.slow_started = asyncio.Event()
         self.slow_release = asyncio.Event()
 
@@ -82,6 +98,37 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(health.headers["Cache-Control"], "no-store")
         self.assertIn("frame-ancestors 'none'", health.headers["Content-Security-Policy"])
 
+    async def test_navigation_pages_are_served(self) -> None:
+        sites = await self.session.get(self.server.make_url("/sites"))
+        ai_services = await self.session.get(self.server.make_url("/ai-services"))
+        self.assertEqual(sites.status, 200)
+        self.assertEqual(ai_services.status, 200)
+        self.assertIn("站点推荐", await sites.text())
+        self.assertIn("AI 服务", await ai_services.text())
+
+    async def test_site_quality_and_exposed_upstream_analysis(self) -> None:
+        response = await self.session.post(
+            self.server.make_url("/api/site-analysis"),
+            json={
+                "url": str(self.upstream.make_url("/v1")),
+                "provider": "openai",
+                "model": "gpt-5.6",
+                "locale": "en",
+            },
+        )
+        result = await response.json()
+        self.assertEqual(response.status, 200)
+        self.assertTrue(result["quality"]["reachable"])
+        self.assertEqual(result["quality"]["httpStatus"], 204)
+        self.assertEqual(result["quality"]["ipDetails"][0]["scope"], "loopback")
+        self.assertIsNone(result["quality"]["ipDetails"][0]["source"])
+        self.assertEqual(result["route"]["suspectedProvider"], "OpenAI")
+        self.assertEqual(
+            result["route"]["exposedUpstreamUrl"],
+            "https://api.openai.com/v1/chat/completions",
+        )
+        self.assertEqual(result["route"]["proxySignals"], 1)
+
     async def test_streaming_end_to_end_and_english_validation(self) -> None:
         response = await self.session.post(
             self.server.make_url("/api/test"),
@@ -96,6 +143,10 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result["requests"], 10)
         self.assertEqual(result["success"], 10)
         self.assertEqual(result["recommendedConcurrency"], 4)
+        self.assertEqual(
+            result["usage"],
+            {"input": 100, "output": 20, "cacheRead": 30, "cacheWrite": 0},
+        )
         self.assertIn("at least 95%", result["recommendationBasis"])
 
         invalid = await self.session.post(
