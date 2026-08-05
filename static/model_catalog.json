@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "providers": [
+    {
+      "id": "openai",
+      "adapter": "openai_compatible",
+      "label": "OpenAI · GPT",
+      "placeholder": "https://relay.example.com/v1",
+      "groups": [
+        {
+          "labelKey": "groupCurrentGpt",
+          "models": [
+            {"id": "gpt-5.6", "label": {"zh": "gpt-5.6 · 默认指向 Sol", "en": "gpt-5.6 · defaults to Sol"}},
+            {"id": "gpt-5.6-sol", "label": {"zh": "gpt-5.6-sol · 旗舰能力", "en": "gpt-5.6-sol · flagship"}},
+            {"id": "gpt-5.6-terra", "label": {"zh": "gpt-5.6-terra · 均衡型", "en": "gpt-5.6-terra · balanced"}},
+            {"id": "gpt-5.6-luna", "label": {"zh": "gpt-5.6-luna · 高吞吐型", "en": "gpt-5.6-luna · high throughput"}}
+          ]
+        },
+        {
+          "labelKey": "groupOtherGpt",
+          "models": ["gpt-5.5", "gpt-5.4", "gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.2", "gpt-5.1", "gpt-5", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4.1-mini", "gpt-4o-mini"]
+        }
+      ]
+    },
+    {
+      "id": "anthropic",
+      "adapter": "anthropic",
+      "label": "Anthropic · Claude / Claude Code",
+      "placeholder": "https://relay.example.com/v1/messages",
+      "groups": [
+        {
+          "labelKey": "groupClaudeCurrent",
+          "models": [
+            {"id": "claude-fable-5", "label": {"zh": "claude-fable-5 · 长时智能体", "en": "claude-fable-5 · long-running agents"}},
+            {"id": "claude-opus-5", "label": {"zh": "claude-opus-5 · 复杂编码", "en": "claude-opus-5 · complex coding"}},
+            {"id": "claude-sonnet-5", "label": {"zh": "claude-sonnet-5 · 均衡型", "en": "claude-sonnet-5 · balanced"}},
+            {"id": "claude-haiku-4-5-20251001", "label": {"zh": "claude-haiku-4-5-20251001 · 高速", "en": "claude-haiku-4-5-20251001 · fast"}}
+          ]
+        },
+        {"labelKey": "groupClaudeLegacy", "models": ["claude-opus-4-8", "claude-opus-4-7", "claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5"]},
+        {"labelKey": "groupClaudeCode", "models": ["best", "fable", "opus", "sonnet", "haiku", "opusplan"]}
+      ]
+    },
+    {
+      "id": "gemini",
+      "adapter": "gemini",
+      "label": "Google · Gemini",
+      "placeholder": "https://relay.example.com/v1beta",
+      "groups": [
+        {"labelKey": "groupGeminiStable", "models": ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite"]},
+        {"labelKey": "groupGeminiAlias", "models": ["gemini-flash-latest", "gemini-pro-latest"]}
+      ]
+    },
+    {
+      "id": "deepseek",
+      "adapter": "openai_compatible",
+      "label": {"zh": "DeepSeek · OpenAI 兼容", "en": "DeepSeek · OpenAI compatible"},
+      "placeholder": "https://api.deepseek.com/v1",
+      "groups": [
+        {"labelKey": "groupDeepseekCurrent", "models": ["deepseek-v4-pro", "deepseek-v4-flash"]},
+        {"labelKey": "groupLegacyAlias", "models": ["deepseek-chat", "deepseek-reasoner"]}
+      ]
+    },
+    {
+      "id": "qwen",
+      "adapter": "openai_compatible",
+      "label": "Alibaba · Qwen",
+      "placeholder": "https://relay.example.com/compatible-mode/v1",
+      "groups": [
+        {"labelKey": "groupQwenCurrent", "models": ["qwen3.8-max-preview", "qwen3.7-max", "qwen3.7-plus", "qwen3.6-plus", "qwen3.6-flash", "qwen3.5-plus", "qwen3-coder-next", "qwen3-coder-plus"]},
+        {"labelKey": "groupQwenAlias", "models": ["qwen-max", "qwen-plus", "qwen-turbo"]}
+      ]
+    },
+    {
+      "id": "zhipu",
+      "adapter": "openai_compatible",
+      "label": "Z.AI · GLM",
+      "placeholder": "https://relay.example.com/api/paas/v4",
+      "groups": [{"labelKey": "groupGlm", "models": ["glm-5.1", "glm-5", "glm-5-turbo", "glm-4.7", "glm-4.7-flashx", "glm-4.7-flash", "glm-4.6", "glm-4.5-air"]}]
+    },
+    {
+      "id": "moonshot",
+      "adapter": "openai_compatible",
+      "label": "Moonshot · Kimi",
+      "placeholder": "https://relay.example.com/v1",
+      "groups": [{"labelKey": "groupKimi", "models": ["kimi-k2.5"]}]
+    },
+    {
+      "id": "minimax",
+      "adapter": "openai_compatible",
+      "label": "MiniMax",
+      "placeholder": "https://relay.example.com/v1",
+      "groups": [{"labelKey": "groupMinimax", "models": ["MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2.5-highspeed", "MiniMax-M2.1", "MiniMax-M2.1-highspeed", "MiniMax-M2"]}]
+    },
+    {
+      "id": "xai",
+      "adapter": "openai_compatible",
+      "label": "xAI · Grok",
+      "placeholder": "https://api.x.ai/v1",
+      "groups": [{"labelKey": "groupGrok", "models": ["grok-4.5"]}]
+    },
+    {
+      "id": "mistral",
+      "adapter": "openai_compatible",
+      "label": "Mistral AI",
+      "placeholder": "https://api.mistral.ai/v1",
+      "groups": [{"labelKey": "groupMistral", "models": ["mistral-large-latest", "mistral-small-latest", "codestral-latest"]}]
+    },
+    {
+      "id": "openai_compatible",
+      "adapter": "openai_compatible",
+      "label": {"zh": "其他 OpenAI 兼容中转站", "en": "Other OpenAI-compatible relay"},
+      "placeholder": "https://relay.example.com/v1/chat/completions",
+      "groups": [{"labelKey": "groupRelayCommon", "models": ["gpt-5.6", "claude-sonnet-5", "gemini-3.6-flash", "deepseek-v4-pro", "qwen3.7-max", "glm-5.1", "kimi-k2.5", "MiniMax-M2.7", "grok-4.5", "mistral-large-latest"]}]
+    }
+  ]
+}
+

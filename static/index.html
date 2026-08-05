@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LLMStorm 大模型中转站并发能力测试工具">
+  <meta name="theme-color" content="#080b0c">
+  <meta name="color-scheme" content="dark">
+  <title>LLMStorm · 大模型并发测试</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="LLMStorm 首页" data-i18n-aria="homeAria">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M18.7 2 7 17.2h8.2L12.8 30 25 13.6h-8.1L18.7 2Z"/></svg>
+      </span>
+      <span>LLM<span>STORM</span></span>
+    </a>
+    <div class="header-actions">
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-locale="zh" aria-pressed="true">中</button>
+        <button type="button" data-locale="en" aria-pressed="false">EN</button>
+      </div>
+      <div class="local-badge"><span></span><b data-i18n="localBadge">本地运行 · Key 不落盘</b></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span>LLM RELAY BENCHMARK</span><i></i></div>
+        <h1 id="page-title" data-i18n-html="heroTitle">压测每一次请求<br><em>看清真实并发上限</em></h1>
+        <p data-i18n="heroDescription">从单请求到峰值并发逐档加压，把成功率、吞吐与响应延迟变成清晰结论。</p>
+        <div class="hero-tags" aria-label="测试能力" data-i18n-aria="heroCapabilities">
+          <span><i></i><b data-i18n="multiProvider">多厂商协议</b></span>
+          <span><i></i><b data-i18n="rampLoad">阶梯式加压</b></span>
+          <span><i></i><b data-i18n="liveStream">实时结果流</b></span>
+        </div>
+      </div>
+      <div class="hero-console" aria-hidden="true">
+        <div class="console-top"><span><i></i>CAPACITY SCANNER</span><em>LIVE</em></div>
+        <div class="console-body">
+          <div class="storm-scope"><i></i><i></i><i></i><span></span></div>
+          <div class="signal-bars">
+            <div><span>RELAY SIGNAL</span><i class="signal-84"></i></div>
+            <div><span>STREAM HEALTH</span><i class="signal-96"></i></div>
+            <div><span>LATENCY TRACE</span><i class="signal-68"></i></div>
+          </div>
+        </div>
+        <div class="hero-stats" aria-label="产品特点" data-i18n-aria="productFeatures">
+          <div><strong>10+</strong><span data-i18n="providerPresets">厂商预设</span></div>
+          <div><strong>5K</strong><span data-i18n="customConcurrency">自定义并发</span></div>
+          <div><strong>SSE</strong><span data-i18n="liveProgress">实时进度</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <article class="panel config-panel">
+        <div class="panel-heading">
+          <div><span class="step-index">01</span><h2 data-i18n="configTitle">测试配置</h2></div>
+          <p data-i18n="configSubtitle">填写中转站连接信息</p>
+        </div>
+
+        <form id="test-form" autocomplete="off">
+          <div class="field full-field">
+            <label for="url"><b data-i18n="endpointLabel">接口地址</b> <span>URL</span></label>
+            <div class="input-shell has-prefix">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a4 4 0 0 0 5.7.1l2.8-2.8a4 4 0 0 0-5.6-5.7l-1.6 1.6m1.5 4a4 4 0 0 0-5.7-.1l-2.8 2.8A4 4 0 0 0 10.5 19l1.6-1.6"/></svg>
+              <input id="url" name="url" type="url" required placeholder="https://relay.example.com/v1" spellcheck="false">
+            </div>
+            <small data-i18n="endpointHelp">可填写 API 基地址或完整的请求端点</small>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="provider" data-i18n="providerLabel">厂商 / 协议</label>
+              <div class="select-shell">
+                <select id="provider" name="provider" required disabled>
+                  <option value="" data-i18n="catalogLoading">正在加载厂商目录…</option>
+                </select>
+                <svg viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="model"><b data-i18n="modelLabel">模型 / 精确 ID</b> <span data-i18n="modelHint">官方预设 + 自定义</span></label>
+              <div class="select-shell" id="model-select-shell">
+                <select id="model" name="model" required disabled></select>
+                <svg viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg>
+              </div>
+              <div class="input-shell custom-model-shell is-hidden" id="custom-model-shell">
+                <input id="custom-model" type="text" placeholder="手动输入中转站模型 ID" data-i18n-placeholder="customModelPlaceholder" spellcheck="false">
+                <button class="text-button" id="back-to-models" type="button" data-i18n="back">返回</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field full-field">
+            <label for="api-key">API Key</label>
+            <div class="input-shell has-prefix has-suffix">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8m-3 3 2 2m-5 1 2 2"/></svg>
+              <input id="api-key" name="api-key" type="password" placeholder="sk-••••••••••••••••" autocomplete="off" data-1p-ignore spellcheck="false">
+              <button class="icon-button" id="toggle-key" type="button" aria-label="显示 Key" data-i18n-aria="keyShow">
+                <svg class="eye-open" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+                <svg class="eye-closed" viewBox="0 0 24 24"><path d="m3 3 18 18M10.6 6.2A11 11 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-2.3 3.1M6.6 6.7C3.6 8.5 2 12 2 12s3.5 6 10 6a10 10 0 0 0 4-.8M9.9 9.8a3 3 0 0 0 4.2 4.3"/></svg>
+              </button>
+            </div>
+            <small><span class="lock-dot"></span> <span data-i18n="keyPrivacy">仅用于本次请求，不写入日志或浏览器存储</span></small>
+          </div>
+
+          <div class="field full-field concurrency-field">
+            <div class="label-row">
+              <div>
+                <label for="concurrency" data-i18n="concurrencyLabel">最大并发数</label>
+                <small id="concurrency-help">滑杆快速选择，右侧可直接输入 1–5000</small>
+              </div>
+              <div class="number-shell">
+                <input id="concurrency" name="concurrency" type="number" min="1" max="5000" step="1" value="20" inputmode="numeric" required aria-describedby="concurrency-help">
+                <span data-i18n="concurrencyUnit">并发</span>
+              </div>
+            </div>
+            <input id="concurrency-range" class="range" type="range" min="1" max="500" value="20" aria-label="最大并发数滑块" data-i18n-aria="concurrencySliderAria">
+            <div class="range-scale" aria-hidden="true">
+              <span class="tick-first" style="--tick: 0%">1</span>
+              <span style="--tick: 19.84%">100</span>
+              <span style="--tick: 49.90%">250</span>
+              <span class="tick-last" style="--tick: 100%">500+</span>
+            </div>
+          </div>
+
+          <details class="advanced">
+            <summary><span data-i18n="advanced">高级设置</span> <svg viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg></summary>
+            <div class="advanced-grid">
+              <div class="field">
+                <label for="timeout"><b data-i18n="timeout">单请求超时</b> <span data-i18n="secondsUnit">秒</span></label>
+                <input id="timeout" class="plain-input" type="number" min="5" max="300" value="60">
+              </div>
+              <div class="field">
+                <label for="max-tokens"><b data-i18n="maxOutput">最大输出</b> <span>Token</span></label>
+                <input id="max-tokens" class="plain-input" type="number" min="1" max="2048" value="64">
+              </div>
+              <div class="field full-field">
+                <label for="prompt" data-i18n="promptLabel">测试提示词</label>
+                <input id="prompt" class="plain-input" type="text" maxlength="2000" value="请用一句话说明并发测试的意义。" data-i18n-value="defaultPrompt">
+              </div>
+              <label class="checkbox-row">
+                <input id="insecure" type="checkbox">
+                <span class="checkbox-ui"><svg viewBox="0 0 16 16"><path d="m3 8 3 3 7-7"/></svg></span>
+                <span data-i18n="insecure">跳过 HTTPS 证书校验（仅限可信内网）</span>
+              </label>
+            </div>
+          </details>
+
+          <div class="cost-notice">
+            <svg viewBox="0 0 24 24"><path d="M12 3 2.7 20h18.6L12 3Z"/><path d="M12 9v4m0 3h.01"/></svg>
+            <p><strong data-i18n="costTitle">注意调用费用</strong><br><span id="cost-body">系统会按 1 → 25% → 50% → 75% → 最大值逐级发起请求；自定义高并发请逐步提升。</span></p>
+          </div>
+
+          <button id="start-button" class="primary-button" type="submit">
+            <span class="button-idle"><svg viewBox="0 0 24 24"><path d="m13 2-2 8H4l7 4-1 8 10-13h-7V2Z"/></svg><b data-i18n="startTest">开始并发测试</b></span>
+            <span class="button-running"><i></i><b data-i18n="stopTest">停止测试</b></span>
+          </button>
+        </form>
+      </article>
+
+      <article class="panel monitor-panel" aria-live="polite">
+        <div class="panel-heading">
+          <div><span class="step-index">02</span><h2 data-i18n="monitorTitle">实时监测</h2></div>
+          <div id="status-badge" class="status-badge idle"><span></span><b data-i18n="statusWaiting">等待配置</b></div>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+          <div class="radar" aria-hidden="true"><i></i><i></i><i></i><span></span></div>
+          <h3 data-i18n="emptyTitle">准备迎接风暴</h3>
+          <p data-i18n-html="emptyBody">完成左侧配置并开始测试<br>数据将在这里实时呈现</p>
+        </div>
+
+        <div id="test-state" class="test-state is-hidden">
+          <section class="progress-card">
+            <div class="progress-top">
+              <div><span id="progress-label" data-i18n="connecting">正在建立连接</span><strong id="progress-percent">0%</strong></div>
+              <span id="progress-count">0 / 0 请求</span>
+            </div>
+            <div class="progress-track"><span id="progress-bar"></span><i></i></div>
+            <div class="live-meta">
+              <div><span data-i18n="currentConcurrency">当前并发</span><strong id="current-concurrency">—</strong></div>
+              <div><span data-i18n="successfulRequests">成功请求</span><strong id="live-success">0</strong></div>
+              <div><span data-i18n="currentStatus">当前状态</span><strong id="last-status">—</strong></div>
+            </div>
+          </section>
+
+          <section id="summary-grid" class="summary-grid is-hidden">
+            <div class="metric featured"><span data-i18n="recommendedConcurrency">建议并发</span><strong id="metric-recommended">—</strong><small id="metric-threshold">成功率 ≥ 95%</small></div>
+            <div class="metric"><span data-i18n="overallSuccess">整体成功率</span><strong id="metric-success">—</strong><small id="metric-success-detail">—</small></div>
+            <div class="metric"><span data-i18n="peakThroughput">峰值吞吐</span><strong id="metric-throughput">—</strong><small>requests / sec</small></div>
+            <div class="metric"><span data-i18n="p95Latency">P95 延迟</span><strong id="metric-latency">—</strong><small data-i18n="allStages">全阶段统计</small></div>
+          </section>
+
+          <section class="stage-section">
+            <div class="section-title"><h3 data-i18n="stageResults">分档结果</h3><span id="stage-counter">0 / 0</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th data-i18n="concurrency">并发</th><th data-i18n="successRate">成功率</th><th data-i18n="throughput">吞吐</th><th data-i18n="p95Latency">P95 延迟</th><th data-i18n="status">状态</th></tr></thead>
+                <tbody id="stage-body"><tr class="placeholder-row"><td colspan="5" data-i18n="waitingStage">等待第一档测试结果…</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="output-section">
+            <div class="section-title"><h3 data-i18n="testOutput">测试输出</h3><button id="copy-output" type="button" data-i18n="copyResult">复制结果</button></div>
+            <pre id="output-log"><span class="log-muted" data-i18n="logPlaceholder">// 测试日志将在此处输出</span></pre>
+          </section>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer><span>LLMSTORM / LOCAL LOAD TESTER</span><span data-i18n="authorizedOnly">请仅在授权范围内进行压力测试</span></footer>
+  <noscript><div class="noscript" data-i18n="noScript">此页面需要启用 JavaScript 才能运行测试。</div></noscript>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/static/i18n.js" defer></script>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

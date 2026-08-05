@@ -1,0 +1,17 @@
+.git
+.github
+__pycache__
+*.py[cod]
+.venv
+venv
+.env*
+tests
+tests/e2e
+node_modules
+test-results
+playwright-report
+package*.json
+playwright.config.js
+requirements-dev.txt
+result*.json
+*.log

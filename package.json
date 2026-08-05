@@ -1,0 +1,14 @@
+{
+  "name": "llmstorm-web-tests",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "check": "node --check static/i18n.js && node --check static/api.js && node --check static/catalog.js && node --check static/monitor.js && node --check static/app.js",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
+
