@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
+  <title id="title">LLMStorm relay load test console</title>
+  <desc id="desc">Dark green banner for the LLMStorm LLM relay concurrency benchmark</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10180d"/>
+      <stop offset="0.48" stop-color="#080b0c"/>
+      <stop offset="1" stop-color="#071315"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#8fbd26"/>
+      <stop offset="1" stop-color="#c7ff43"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+    </pattern>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="420" rx="24" fill="url(#bg)"/>
+  <rect width="1280" height="420" rx="24" fill="url(#grid)"/>
+  <circle cx="122" cy="-20" r="260" fill="#9ee52e" opacity=".07"/>
+  <circle cx="1180" cy="390" r="280" fill="#37e2d1" opacity=".045"/>
+  <rect x="1" y="1" width="1278" height="418" rx="23" fill="none" stroke="#ffffff" stroke-opacity=".09"/>
+
+  <g transform="translate(70 58)">
+    <rect width="48" height="48" rx="12" fill="#c7ff43"/>
+    <path d="M28 7 13 27h11L20 42l17-23H26L28 7Z" fill="#101408"/>
+    <text x="64" y="33" fill="#f4f7f5" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="27" font-weight="800" letter-spacing="1">LLM<tspan fill="#c7ff43">STORM</tspan></text>
+    <text x="972" y="28" fill="#83908d" font-family="Consolas,monospace" font-size="12" letter-spacing="2">RELAY LOAD TEST CONSOLE</text>
+  </g>
+
+  <g transform="translate(70 150)">
+    <text fill="#f4f7f5" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="52" font-weight="750" letter-spacing="-2">Stress every request.</text>
+    <text y="62" fill="#c7ff43" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="52" font-weight="750" letter-spacing="-2">Find the real concurrency limit.</text>
+    <text y="105" fill="#8d9997" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="17">大模型中转站并发基准测试 · Live success rate · Throughput · P95 latency</text>
+  </g>
+
+  <g transform="translate(70 322)" font-family="Consolas,monospace">
+    <circle cx="4" cy="5" r="4" fill="#c7ff43" filter="url(#glow)"/>
+    <text x="18" y="10" fill="#899491" font-size="12" letter-spacing="1">MULTI-PROTOCOL</text>
+    <circle cx="204" cy="5" r="4" fill="#c7ff43" filter="url(#glow)"/>
+    <text x="218" y="10" fill="#899491" font-size="12" letter-spacing="1">PROGRESSIVE LOAD</text>
+    <circle cx="424" cy="5" r="4" fill="#c7ff43" filter="url(#glow)"/>
+    <text x="438" y="10" fill="#899491" font-size="12" letter-spacing="1">LIVE SSE</text>
+  </g>
+
+  <g transform="translate(862 302)" font-family="Inter,Segoe UI,Arial,sans-serif">
+    <rect width="105" height="66" rx="10" fill="#ffffff" fill-opacity=".025" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="16" y="29" fill="#f4f7f5" font-size="20" font-weight="700">10+</text>
+    <text x="16" y="49" fill="#687471" font-size="10" letter-spacing="1">PROVIDERS</text>
+    <rect x="116" width="105" height="66" rx="10" fill="#ffffff" fill-opacity=".025" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="132" y="29" fill="#f4f7f5" font-size="20" font-weight="700">5K</text>
+    <text x="132" y="49" fill="#687471" font-size="10" letter-spacing="1">LOCAL MAX</text>
+    <rect x="232" width="105" height="66" rx="10" fill="#ffffff" fill-opacity=".025" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="248" y="29" fill="#f4f7f5" font-size="20" font-weight="700">SSE</text>
+    <text x="248" y="49" fill="#687471" font-size="10" letter-spacing="1">LIVE RESULT</text>
+  </g>
+  <rect x="70" y="387" width="1140" height="2" rx="1" fill="url(#accent)" opacity=".75"/>
+</svg>
+
