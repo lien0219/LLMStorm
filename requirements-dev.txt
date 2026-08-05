@@ -1,4 +1,4 @@
 -r requirements.txt
-coverage[toml]>=7.6,<8
+coverage[toml]>=7.15.2,<8
 mypy>=1.14,<2
 ruff>=0.9,<1
