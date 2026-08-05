@@ -3,6 +3,9 @@ from __future__ import annotations
 import time
 import unittest
 
+from aiohttp import web
+from aiohttp.test_utils import TestServer
+
 from llmstorm.pricing import PricingService
 
 
@@ -55,6 +58,38 @@ class PricingTests(unittest.IsolatedAsyncioTestCase):
         result = await service.lookup("openai", "unknown-model")
         self.assertFalse(result["found"])
         self.assertEqual(result["status"], "unavailable")
+
+    async def test_refreshes_remote_catalog_and_reuses_fresh_cache(self) -> None:
+        requests = 0
+
+        async def catalog(_: web.Request) -> web.Response:
+            nonlocal requests
+            requests += 1
+            return web.json_response(
+                {
+                    "deepseek/custom-model": {
+                        "litellm_provider": "deepseek",
+                        "input_cost_per_token": 0.000001,
+                        "output_cost_per_token": 0.000004,
+                    }
+                }
+            )
+
+        app = web.Application()
+        app.router.add_get("/prices.json", catalog)
+        server = TestServer(app)
+        await server.start_server()
+        self.addAsyncCleanup(server.close)
+
+        service = PricingService(catalog_url=str(server.make_url("/prices.json")))
+        first = await service.lookup("deepseek", "custom-model")
+        second = await service.lookup("deepseek", "custom-model")
+
+        self.assertEqual(first["status"], "live")
+        self.assertEqual(first["prices"]["input"], 1)
+        self.assertEqual(first["prices"]["output"], 4)
+        self.assertEqual(second["status"], "live")
+        self.assertEqual(requests, 1)
 
 
 if __name__ == "__main__":
