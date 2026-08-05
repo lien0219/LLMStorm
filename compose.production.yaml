@@ -1,0 +1,39 @@
+name: llmstorm
+
+services:
+  llmstorm:
+    image: ${LLMSTORM_IMAGE:-ghcr.io/lien0219/llmstorm}:${LLMSTORM_VERSION:-latest}
+    pull_policy: always
+    ports:
+      - "${LLMSTORM_BIND_ADDRESS:-127.0.0.1}:${LLMSTORM_HOST_PORT:-8765}:8765"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8765
+      LLMSTORM_PUBLIC_MODE: ${LLMSTORM_PUBLIC_MODE:-1}
+      LLMSTORM_MAX_CONCURRENCY: ${LLMSTORM_MAX_CONCURRENCY:-500}
+      LLMSTORM_MAX_ACTIVE_TESTS: ${LLMSTORM_MAX_ACTIVE_TESTS:-2}
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    restart: unless-stopped
+    stop_grace_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/api/health', timeout=2)"
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

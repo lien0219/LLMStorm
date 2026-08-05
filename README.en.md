@@ -9,6 +9,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/lien0219/LLMStorm/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/lien0219/LLMStorm/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](DEPLOYMENT.md)
+[![GHCR](https://img.shields.io/badge/GHCR-ghcr.io%2Flien0219%2Fllmstorm-2496ED?style=flat-square&logo=docker&logoColor=white)](https://github.com/lien0219/LLMStorm/pkgs/container/llmstorm)
 [![License](https://img.shields.io/badge/License-MIT-c7ff43?style=flat-square)](LICENSE)
 
 [简体中文](README.md) · [English](README.en.md)
@@ -75,7 +76,7 @@ cd LLMStorm
 docker compose up -d --build
 ```
 
-Compose enables public safety mode and caps each test at 500 concurrent requests by default. See [DEPLOYMENT.md](DEPLOYMENT.md) for environment variables, reverse-proxy settings, and SSE requirements.
+Compose enables public safety mode and caps each test at 500 concurrent requests by default. Servers can pull versioned GHCR images directly; see [DEPLOYMENT.md](DEPLOYMENT.md) for publishing, upgrades, rollbacks, and proxy requirements.
 
 <a id="how-it-works"></a>
 

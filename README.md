@@ -9,11 +9,12 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/lien0219/LLMStorm/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/lien0219/LLMStorm/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)](DEPLOYMENT.md)
+[![GHCR](https://img.shields.io/badge/GHCR-ghcr.io%2Flien0219%2Fllmstorm-2496ED?style=flat-square&logo=docker&logoColor=white)](https://github.com/lien0219/LLMStorm/pkgs/container/llmstorm)
 [![License](https://img.shields.io/badge/License-MIT-c7ff43?style=flat-square)](LICENSE)
 
 [简体中文](README.md) · [English](README.en.md)
 
-[快速开始](#quick-start) · [核心能力](#highlights) · [支持矩阵](#protocols) · [工作原理](#how-it-works) · [生产部署](DEPLOYMENT.md) · [参与贡献](CONTRIBUTING.md)
+[快速开始](#quick-start) · [核心能力](#highlights) · [支持矩阵](#protocols) · [工作原理](#how-it-works) · [生产部署](DEPLOYMENT.zh-CN.md) · [参与贡献](CONTRIBUTING.md)
 
 </div>
 
@@ -75,7 +76,7 @@ cd LLMStorm
 docker compose up -d --build
 ```
 
-Compose 默认启用公网安全模式，单次最大并发为 500。更多环境变量、反向代理与 SSE 配置见 [生产部署指南](DEPLOYMENT.md)。
+Compose 默认启用公网安全模式，单次最大并发为 500。服务器可直接拉取带版本号的 GHCR 镜像；发布、升级与回滚流程见 [生产部署指南](DEPLOYMENT.zh-CN.md)。
 
 <a id="how-it-works"></a>
 
