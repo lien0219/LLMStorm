@@ -7,6 +7,9 @@ services:
       LLMSTORM_PUBLIC_MODE: "1"
       LLMSTORM_MAX_CONCURRENCY: "500"
       LLMSTORM_MAX_ACTIVE_TESTS: "2"
+      LLMSTORM_STATS_DB: ${LLMSTORM_STATS_DB:-/data/site-stats.db}
+    volumes:
+      - llmstorm-data:/data
     init: true
     read_only: true
     tmpfs:
@@ -16,3 +19,6 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+volumes:
+  llmstorm-data:

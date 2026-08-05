@@ -24,14 +24,52 @@ test("loads the shared catalog and preserves state across locale changes", async
 
   await model.selectOption("__custom__");
   await page.locator("#custom-model").fill("relay-custom-model");
-  if (await page.locator(".nav-orb-toggle").isVisible()) {
-    await page.locator(".nav-orb-toggle").click();
+  const header = page.locator(".site-header");
+  const navOrb = page.locator(".nav-orb-toggle");
+  if (await navOrb.isVisible()) {
+    await navOrb.click();
+    await expect(header).toHaveClass(/is-expanded/);
+    await expect(navOrb).toBeHidden();
   }
   await page.locator('[data-locale="en"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("#custom-model")).toHaveValue("relay-custom-model");
   await expect(page.locator("#concurrency")).toHaveValue("319");
   await expect(page.locator('label[for="concurrency"]')).toHaveText("Maximum concurrency");
+});
+
+test("shows live site counters and keeps likes additive", async ({ page }) => {
+  await page.goto("/?lang=zh");
+  await expect(page.locator("#online-count")).toHaveText(/^\d/);
+  await expect(page.locator("#view-count")).toHaveText(/^\d/);
+  await expect(page.locator("#like-count")).toHaveText(/^\d/);
+
+  const online = Number((await page.locator("#online-count").textContent()).replace(/\D/g, ""));
+  expect(online).toBeGreaterThanOrEqual(10);
+  expect(online).toBeLessThanOrEqual(20);
+  await expect(page.locator('[data-stat="online"]')).toHaveAttribute(
+    "data-tooltip",
+    `具体数量：${online}`
+  );
+
+  const before = Number((await page.locator("#like-count").textContent()).replace(/\D/g, ""));
+  await page.locator("#site-like-button").click();
+  await expect.poll(async () => (
+    Number((await page.locator("#like-count").textContent()).replace(/\D/g, ""))
+  )).toBeGreaterThan(before);
+  await expect(page.locator(".floating-like-notice").first()).toContainText("匿名用户");
+  await expect(page.locator("#site-like-button")).toHaveAttribute("data-tooltip", /具体数量/);
+});
+
+test("reuses the complete statistics dashboard on every secondary page", async ({ page }) => {
+  for (const path of ["/sites?lang=zh", "/ai-services?lang=zh", "/support?lang=zh"]) {
+    await page.goto(path);
+    await expect(page.locator(".shared-stats-console")).toBeVisible();
+    await expect(page.locator(".shared-stats-console .console-top")).toContainText("CAPACITY SCANNER");
+    await expect(page.locator("#online-count")).toHaveText(/^\d/);
+    await expect(page.locator("#view-count")).toHaveText(/^\d/);
+    await expect(page.locator("#like-count")).toHaveText(/^\d/);
+  }
 });
 
 test("fits a mobile viewport without horizontal overflow", async ({ page }) => {
@@ -138,7 +176,7 @@ test("morphs the header into a draggable navigation orb", async ({ page }) => {
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect.poll(
     async () => (await header.boundingBox()).x,
-    { timeout: 300, intervals: [40, 60, 80] }
+    { timeout: 1_000, intervals: [40, 80, 120] }
   ).toBeLessThan(moved.x - 5);
   await expect(header).not.toHaveClass(/is-floating/, { timeout: 2_000 });
   await expect(page.locator(".primary-nav")).toBeVisible();

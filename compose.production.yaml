@@ -12,6 +12,11 @@ services:
       LLMSTORM_PUBLIC_MODE: ${LLMSTORM_PUBLIC_MODE:-1}
       LLMSTORM_MAX_CONCURRENCY: ${LLMSTORM_MAX_CONCURRENCY:-500}
       LLMSTORM_MAX_ACTIVE_TESTS: ${LLMSTORM_MAX_ACTIVE_TESTS:-2}
+      LLMSTORM_PRICING_CACHE_SECONDS: ${LLMSTORM_PRICING_CACHE_SECONDS:-21600}
+      LLMSTORM_PRICING_TIMEOUT_SECONDS: ${LLMSTORM_PRICING_TIMEOUT_SECONDS:-12}
+      LLMSTORM_STATS_DB: ${LLMSTORM_STATS_DB:-/data/site-stats.db}
+    volumes:
+      - llmstorm-data:/data
     init: true
     read_only: true
     tmpfs:
@@ -37,3 +42,6 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+
+volumes:
+  llmstorm-data:

@@ -7,6 +7,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,7 @@ from llmstorm.policy import (
 )
 from llmstorm.pricing import DEFAULT_CATALOG_URL, PricingService
 from llmstorm.site_probe import probe_site
+from llmstorm.site_stats import SiteStats
 from load_test_engine import (
     TestConfig,
     build_final_summary,
@@ -44,6 +46,8 @@ SETTINGS_KEY = web.AppKey("settings", dict)
 TEST_SEMAPHORE_KEY = web.AppKey("test_semaphore", asyncio.Semaphore)
 PRICING_SERVICE_KEY = web.AppKey("pricing_service", PricingService)
 ANALYSIS_SEMAPHORE_KEY = web.AppKey("analysis_semaphore", asyncio.Semaphore)
+SITE_STATS_KEY = web.AppKey("site_stats", SiteStats)
+CLIENT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{16,80}$")
 
 WEB_MESSAGES = {
     "zh": {
@@ -170,6 +174,54 @@ async def model_pricing(request: web.Request) -> web.Response:
         )
     result = await request.app[PRICING_SERVICE_KEY].lookup(provider, model)
     return web.json_response(result)
+
+
+def valid_client_id(value: str) -> bool:
+    return bool(CLIENT_ID_PATTERN.fullmatch(value))
+
+
+async def stats_snapshot(request: web.Request) -> web.Response:
+    return web.json_response(await request.app[SITE_STATS_KEY].snapshot())
+
+
+async def record_page_view(request: web.Request) -> web.Response:
+    return web.json_response(await request.app[SITE_STATS_KEY].record_view())
+
+
+async def add_site_like(request: web.Request) -> web.Response:
+    return web.json_response(await request.app[SITE_STATS_KEY].add_like())
+
+
+async def stats_events(request: web.Request) -> web.StreamResponse:
+    visitor_id = request.query.get("visitorId", "")
+    session_id = request.query.get("sessionId", "")
+    if not valid_client_id(visitor_id) or not valid_client_id(session_id):
+        return web.json_response({"error": "Invalid visitor or session ID"}, status=400)
+
+    stats = request.app[SITE_STATS_KEY]
+    response = web.StreamResponse(
+        headers={
+            **security_headers(),
+            "Content-Type": "text/event-stream; charset=utf-8",
+            "Cache-Control": "no-cache, no-transform",
+            "X-Accel-Buffering": "no",
+        }
+    )
+    await response.prepare(request)
+    queue = await stats.connect(visitor_id, session_id)
+    try:
+        while True:
+            try:
+                message = await asyncio.wait_for(queue.get(), timeout=15)
+            except TimeoutError:
+                await response.write(b": keepalive\n\n")
+                continue
+            await send_event(response, message["event"], message["data"])
+    except (ConnectionError, asyncio.CancelledError):
+        pass
+    finally:
+        await stats.disconnect(session_id, queue)
+    return response
 
 
 async def site_analysis(request: web.Request) -> web.Response:
@@ -387,6 +439,7 @@ def create_app(
     max_concurrency: int | None = None,
     max_active_tests: int | None = None,
     pricing_service: PricingService | None = None,
+    stats_service: SiteStats | None = None,
 ) -> web.Application:
     resolved_public_mode = (
         env_bool("LLMSTORM_PUBLIC_MODE", False) if public_mode is None else public_mode
@@ -418,6 +471,18 @@ def create_app(
         ttl_seconds=env_int("LLMSTORM_PRICING_CACHE_SECONDS", 21600, 60, 604800),
         timeout_seconds=env_int("LLMSTORM_PRICING_TIMEOUT_SECONDS", 12, 1, 60),
     )
+    app[SITE_STATS_KEY] = stats_service or SiteStats(
+        os.getenv("LLMSTORM_STATS_DB", "").strip() or ROOT / "data" / "site-stats.db"
+    )
+
+    async def start_services(application: web.Application) -> None:
+        await application[SITE_STATS_KEY].start()
+
+    async def stop_services(application: web.Application) -> None:
+        await application[SITE_STATS_KEY].close()
+
+    app.on_startup.append(start_services)
+    app.on_cleanup.append(stop_services)
     app.router.add_get("/", index)
     app.router.add_get("/sites", site_recommendations)
     app.router.add_get("/ai-services", ai_services)
@@ -426,6 +491,10 @@ def create_app(
     app.router.add_get("/api/config", public_config)
     app.router.add_get("/api/catalog", model_catalog)
     app.router.add_get("/api/pricing", model_pricing)
+    app.router.add_get("/api/stats", stats_snapshot)
+    app.router.add_get("/api/stats/events", stats_events)
+    app.router.add_post("/api/stats/view", record_page_view)
+    app.router.add_post("/api/stats/like", add_site_like)
     app.router.add_post("/api/site-analysis", site_analysis)
     app.router.add_post("/api/test", run_test)
     app.router.add_static("/static/", STATIC_DIR, show_index=False)

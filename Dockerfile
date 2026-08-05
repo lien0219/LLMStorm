@@ -4,13 +4,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HOST=0.0.0.0 \
     PORT=8765 \
+    LLMSTORM_STATS_DB=/data/site-stats.db \
     LLMSTORM_PUBLIC_MODE=1 \
     LLMSTORM_MAX_CONCURRENCY=500 \
     LLMSTORM_MAX_ACTIVE_TESTS=2
 
 WORKDIR /app
 
-RUN addgroup --system llmstorm && adduser --system --ingroup llmstorm llmstorm
+RUN addgroup --system llmstorm \
+    && adduser --system --ingroup llmstorm llmstorm \
+    && install -d -o llmstorm -g llmstorm /data
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --requirement requirements.txt
@@ -20,6 +23,7 @@ COPY --chown=llmstorm:llmstorm llmstorm ./llmstorm
 COPY --chown=llmstorm:llmstorm static ./static
 
 USER llmstorm
+VOLUME ["/data"]
 EXPOSE 8765
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

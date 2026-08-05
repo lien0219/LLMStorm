@@ -57,10 +57,25 @@
             <div><span>LATENCY TRACE</span><i class="signal-68"></i></div>
           </div>
         </div>
-        <div class="hero-stats" aria-label="产品特点" data-i18n-aria="productFeatures">
-          <div><strong>10+</strong><span data-i18n="providerPresets">厂商预设</span></div>
-          <div><strong>5K</strong><span data-i18n="customConcurrency">自定义并发</span></div>
-          <div><strong>SSE</strong><span data-i18n="liveProgress">实时进度</span></div>
+        <div id="site-stats" class="hero-stats community-stats" aria-label="站点实时数据" data-i18n-aria="siteStatsAria">
+          <div class="site-stat online-stat" data-stat="online" tabindex="0">
+            <i class="online-pulse" aria-hidden="true"></i>
+            <strong id="online-count">—</strong>
+            <span data-i18n="onlineVisitors">实时在线</span>
+          </div>
+          <div class="site-stat" data-stat="views" tabindex="0">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.8"/></svg>
+            <strong id="view-count">—</strong>
+            <span data-i18n="totalViews">总浏览量</span>
+          </div>
+          <button id="site-like-button" class="site-stat like-stat" type="button" data-stat="likes" data-i18n-aria="likeButtonAria" aria-label="点赞">
+            <span class="like-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20.8 5.9a5.3 5.3 0 0 0-7.5 0L12 7.2l-1.3-1.3a5.3 5.3 0 1 0-7.5 7.5L12 22l8.8-8.6a5.3 5.3 0 0 0 0-7.5Z"/></svg>
+              <i></i>
+            </span>
+            <strong id="like-count">—</strong>
+            <span data-i18n="totalLikes">总点赞量</span>
+          </button>
         </div>
       </div>
     </section>
@@ -353,6 +368,7 @@
   <noscript><div class="noscript" data-i18n="noScript">此页面需要启用 JavaScript 才能运行测试。</div></noscript>
   <div id="toast" class="toast" role="status"></div>
   <script src="/static/i18n.js" defer></script>
+  <script type="module" src="/static/site-stats.js"></script>
   <script type="module" src="/static/floating-nav.js"></script>
   <script type="module" src="/static/app.js"></script>
 </body>

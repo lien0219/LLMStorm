@@ -8,6 +8,7 @@ from aiohttp import ClientSession, web
 from aiohttp.test_utils import TestServer
 
 from llmstorm import __version__
+from llmstorm.site_stats import SiteStats
 from web_app import create_app
 
 
@@ -62,6 +63,7 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
                 public_mode=False,
                 max_concurrency=50,
                 max_active_tests=1,
+                stats_service=SiteStats(":memory:"),
             )
         )
         await self.upstream.start_server()
@@ -112,6 +114,34 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         support_body = await support.text()
         self.assertIn("支持与联系", support_body)
         self.assertIn("1824851183@qq.com", support_body)
+
+    async def test_site_statistics_views_likes_and_validation(self) -> None:
+        first_view = await self.session.post(self.server.make_url("/api/stats/view"))
+        second_view = await self.session.post(self.server.make_url("/api/stats/view"))
+        first_like = await self.session.post(self.server.make_url("/api/stats/like"))
+        second_like = await self.session.post(self.server.make_url("/api/stats/like"))
+        snapshot = await self.session.get(self.server.make_url("/api/stats"))
+
+        self.assertEqual((await first_view.json())["views"], 1)
+        self.assertEqual((await second_view.json())["views"], 2)
+        first_like_body = await first_like.json()
+        second_like_body = await second_like.json()
+        self.assertEqual(first_like_body["stats"]["likes"], 1)
+        self.assertEqual(second_like_body["stats"]["likes"], 2)
+        self.assertRegex(first_like_body["like"]["anonymousId"], r"^[A-Z0-9]{6}$")
+        self.assertNotEqual(
+            first_like_body["like"]["eventId"], second_like_body["like"]["eventId"]
+        )
+        snapshot_body = await snapshot.json()
+        self.assertEqual(snapshot_body["views"], 2)
+        self.assertEqual(snapshot_body["likes"], 2)
+        self.assertGreaterEqual(snapshot_body["online"], 10)
+        self.assertTrue(snapshot_body["synthetic"])
+
+        invalid_stream = await self.session.get(
+            self.server.make_url("/api/stats/events?visitorId=bad&sessionId=bad")
+        )
+        self.assertEqual(invalid_stream.status, 400)
 
     async def test_site_quality_and_exposed_upstream_analysis(self) -> None:
         response = await self.session.post(

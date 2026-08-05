@@ -119,6 +119,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for module ownership, compatibility contr
 ## 🔐 Security boundary
 
 - API keys, prompts, and test results are not persisted.
+- Only total views and likes are stored in local SQLite; live presence is memory-only.
 - Public mode blocks private, loopback, link-local, and reserved targets and requires HTTPS upstreams.
 - Server-side per-test concurrency and global job limits are enforced.
 - A hosted operator can still observe traffic at the network boundary; self-host when credentials are sensitive.

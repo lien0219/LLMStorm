@@ -21,6 +21,7 @@ coverage.xml
 Thumbs.db
 *.log
 result*.json
+data/
 node_modules/
 test-results/
 playwright-report/
