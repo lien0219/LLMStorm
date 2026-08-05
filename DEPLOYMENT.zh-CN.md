@@ -12,7 +12,7 @@
 ```
 
 推荐直接运行 GHCR 中已发布的多架构镜像，并把版本固定为明确的发布版本。当前项目版本为
-`1.3.1`，镜像支持 `linux/amd64` 和 `linux/arm64`。
+`1.3.2`，镜像支持 `linux/amd64` 和 `linux/arm64`。
 
 > [!IMPORTANT]
 > LLMStorm 不是静态网站，不能部署到 GitHub Pages 或 Cloudflare Pages。Python 服务需要
@@ -72,7 +72,7 @@ sudo chmod 0600 .env.production
 
 ```dotenv
 LLMSTORM_IMAGE=ghcr.io/lien0219/llmstorm
-LLMSTORM_VERSION=1.3.1
+LLMSTORM_VERSION=1.3.2
 
 # 使用反向代理时仅监听本机，避免绕过 HTTPS 和访问控制。
 LLMSTORM_BIND_ADDRESS=127.0.0.1
@@ -90,7 +90,7 @@ LLMSTORM_PRICING_TIMEOUT_SECONDS=12
 LLMSTORM_STATS_DB=/data/site-stats.db
 ```
 
-生产环境应固定 `1.3.1` 这类明确版本，以便可靠回滚。`latest` 会随新版本移动，`main`
+生产环境应固定 `1.3.2` 这类明确版本，以便可靠回滚。`latest` 会随新版本移动，`main`
 用于预发布，两者都不建议用于需要可重复部署的生产环境。
 
 ### 2.2 拉取并启动
@@ -124,7 +124,7 @@ curl --fail --silent --show-error http://127.0.0.1:8765/api/stats
 健康接口应返回类似内容：
 
 ```json
-{"ok": true, "service": "LLMStorm", "version": "1.3.1"}
+{"ok": true, "service": "LLMStorm", "version": "1.3.2"}
 ```
 
 统计接口应返回 `online`、`views` 和 `likes` 等字段。首次部署时浏览量和点赞量可以从 0
@@ -206,7 +206,7 @@ curl --fail https://llmstorm.example.com/api/health
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `LLMSTORM_IMAGE` | `ghcr.io/lien0219/llmstorm` | 容器镜像地址 |
-| `LLMSTORM_VERSION` | `1.3.1` | 要部署的镜像标签；生产环境应固定版本 |
+| `LLMSTORM_VERSION` | `1.3.2` | 要部署的镜像标签；生产环境应固定版本 |
 | `LLMSTORM_BIND_ADDRESS` | `127.0.0.1` | 映射到宿主机的监听地址 |
 | `LLMSTORM_HOST_PORT` | `8765` | 映射到宿主机的端口 |
 | `LLMSTORM_PUBLIC_MODE` | `1` | 开启公网安全限制 |
@@ -356,15 +356,15 @@ sudo ss -lntp | grep 8765
 
 | Git 事件 | 镜像标签示例 | 用途 |
 | --- | --- | --- |
-| 推送 `main` | `main`、`main-v1.3.1`、`sha-4e1577b` | 预发布和按提交排查问题 |
-| 推送 `v1.3.1` | `v1.3.1`、`1.3.1`、`1.3`、`1`、`latest`、`sha-4e1577b` | 正式生产版本 |
+| 推送 `main` | `main`、`main-v1.3.2`、`sha-4e1577b` | 预发布和按提交排查问题 |
+| 推送 `v1.3.2` | `v1.3.2`、`1.3.2`、`1.3`、`1`、`latest`、`sha-4e1577b` | 正式生产版本 |
 
 发布新版本时，先按语义化版本规则更新 `llmstorm/__init__.py` 中的 `__version__` 并完成
 测试，再创建完全一致的 Git 标签：
 
 ```bash
-git tag -a v1.3.1 -m "LLMStorm v1.3.1"
-git push origin v1.3.1
+git tag -a v1.3.2 -m "LLMStorm v1.3.2"
+git push origin v1.3.2
 ```
 
 工作流会构建 `linux/amd64` 和 `linux/arm64` 镜像，附加 OCI 元数据、SBOM 和构建来源
