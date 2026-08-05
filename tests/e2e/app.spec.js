@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+const readFontSizes = async (page, selectors) => page.evaluate((items) => (
+  Object.fromEntries(items.map((selector) => {
+    const element = document.querySelector(selector);
+    return [selector, element ? Number.parseFloat(getComputedStyle(element).fontSize) : null];
+  }))
+), selectors);
+
 test("loads the shared catalog and preserves state across locale changes", async ({ page }) => {
   await page.goto("/?lang=zh");
   const provider = page.locator("#provider");
@@ -17,6 +24,9 @@ test("loads the shared catalog and preserves state across locale changes", async
 
   await model.selectOption("__custom__");
   await page.locator("#custom-model").fill("relay-custom-model");
+  if (await page.locator(".nav-orb-toggle").isVisible()) {
+    await page.locator(".nav-orb-toggle").click();
+  }
   await page.locator('[data-locale="en"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator("#custom-model")).toHaveValue("relay-custom-model");
@@ -36,6 +46,117 @@ test("fits a mobile viewport without horizontal overflow", async ({ page }) => {
   await expect(page.locator("#page-title")).toContainText("concurrency limit");
 });
 
+test("keeps the shared typography readable across every platform section", async ({ page }) => {
+  await page.goto("/?lang=zh");
+  const homeSizes = await readFontSizes(page, [
+    "body",
+    ".primary-nav a",
+    ".panel-heading p",
+    ".field label",
+    ".field small",
+    ".status-badge",
+    ".quality-metrics span",
+    ".pricing-model-row span",
+    ".pricing-disclaimer p",
+    "footer"
+  ]);
+  for (const [selector, size] of Object.entries(homeSizes)) {
+    expect(size, `${selector} should use the shared readable scale`).toBeGreaterThanOrEqual(13);
+  }
+  expect(homeSizes.body).toBeGreaterThanOrEqual(16);
+  expect(homeSizes[".panel-heading p"]).toBeGreaterThanOrEqual(15);
+  expect(homeSizes[".field label"]).toBeGreaterThanOrEqual(15);
+  expect(homeSizes[".field small"]).toBeGreaterThanOrEqual(15);
+  expect(homeSizes[".quality-metrics span"]).toBeGreaterThanOrEqual(14);
+  expect(homeSizes[".pricing-disclaimer p"]).toBeGreaterThanOrEqual(14);
+
+  await page.goto("/sites?lang=zh");
+  const directorySizes = await readFontSizes(page, [
+    ".directory-eyebrow",
+    ".recommendation-search input",
+    ".recommendation-filters button",
+    ".recommendation-meta span",
+    ".recommendation-card > code",
+    ".recommendation-tags span",
+    ".recommendation-card > a",
+    "footer"
+  ]);
+  for (const [selector, size] of Object.entries(directorySizes)) {
+    expect(size, `${selector} should use the shared readable scale`).toBeGreaterThanOrEqual(13);
+  }
+
+  await page.goto("/support?lang=zh");
+  const supportSizes = await readFontSizes(page, [
+    ".support-panel-heading > span",
+    ".support-panel-heading p",
+    ".support-option h3",
+    ".support-option p",
+    ".support-button",
+    ".support-note",
+    ".contact-copy span",
+    ".contact-note",
+    "footer"
+  ]);
+  for (const [selector, size] of Object.entries(supportSizes)) {
+    expect(size, `${selector} should use the shared readable scale`).toBeGreaterThanOrEqual(13);
+  }
+  expect(supportSizes[".support-panel-heading > span"]).toBeGreaterThanOrEqual(14);
+  expect(supportSizes[".support-panel-heading p"]).toBeGreaterThanOrEqual(17);
+  expect(supportSizes[".support-option h3"]).toBeGreaterThanOrEqual(20);
+  expect(supportSizes[".support-option p"]).toBeGreaterThanOrEqual(16);
+  expect(supportSizes[".support-button"]).toBeGreaterThanOrEqual(16);
+  expect(supportSizes[".support-note"]).toBeGreaterThanOrEqual(14);
+  expect(supportSizes[".contact-note"]).toBeGreaterThanOrEqual(16);
+});
+
+test("morphs the header into a draggable navigation orb", async ({ page }) => {
+  await page.goto("/sites?lang=zh");
+  await expect(page.locator(".recommendation-card")).toHaveCount(9);
+  const header = page.locator(".site-header");
+  const orb = page.locator(".nav-orb-toggle");
+
+  await page.evaluate(() => window.scrollTo(0, 520));
+  await expect(header).toHaveClass(/is-collapsed/);
+  await expect(orb).toBeVisible();
+  const original = await orb.boundingBox();
+  expect(original).not.toBeNull();
+
+  await page.mouse.move(original.x + original.width / 2, original.y + original.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(150, 280, { steps: 8 });
+  await page.mouse.up();
+  const moved = await orb.boundingBox();
+  expect(moved.x).toBeLessThan(original.x - 100);
+
+  await orb.click();
+  await expect(header).toHaveClass(/is-expanded/);
+  await expect(page.locator(".primary-nav")).toBeVisible();
+
+  await page.mouse.click(300, 420);
+  await expect(header).toHaveClass(/is-collapsed/);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(
+    async () => (await header.boundingBox()).x,
+    { timeout: 300, intervals: [40, 60, 80] }
+  ).toBeLessThan(moved.x - 5);
+  await expect(header).not.toHaveClass(/is-floating/, { timeout: 2_000 });
+  await expect(page.locator(".primary-nav")).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => window.scrollTo(0, 520));
+  await expect(header).toHaveClass(/is-collapsed/);
+  await expect.poll(async () => (await orb.boundingBox()).width).toBeLessThanOrEqual(52.5);
+  const mobileOrb = await orb.boundingBox();
+  expect(mobileOrb.x + mobileOrb.width).toBeLessThanOrEqual(390);
+  await orb.click();
+  await expect(header).toHaveClass(/is-expanded/);
+  await expect.poll(async () => (await header.boundingBox()).width).toBeGreaterThan(370);
+  const mobilePanel = await header.boundingBox();
+  expect(mobilePanel.x).toBeGreaterThanOrEqual(0);
+  expect(mobilePanel.x + mobilePanel.width).toBeLessThanOrEqual(390);
+});
+
 test("navigates between the prepared directory pages", async ({ page }) => {
   await page.goto("/?lang=zh");
   await expect(page.locator(".local-badge")).toHaveCount(0);
@@ -48,6 +169,17 @@ test("navigates between the prepared directory pages", async ({ page }) => {
   await expect(page).toHaveURL(/\/ai-services$/);
   await expect(page.locator(".primary-nav a.active")).toContainText("AI 服务");
   await expect(page.locator(".recommendation-card")).toHaveCount(9);
+
+  await page.locator('.primary-nav a[href="/support"]').click();
+  await expect(page).toHaveURL(/\/support$/);
+  await expect(page.locator(".primary-nav a.active")).toContainText("支持与联系");
+  await expect(page.locator(".contact-item")).toHaveCount(2);
+  await page.locator("#feedback-contact").click();
+  await expect(page.locator("#feedback-dialog")).toBeVisible();
+  await expect(page.locator("#feedback-dialog")).toContainText("1824851183");
+  await page.locator("#feedback-dialog-close").click();
+  await expect(page.locator("#feedback-dialog")).not.toBeVisible();
+  await expect(page.locator("[data-app-version]")).toHaveText(/^v\d+\.\d+\.\d+/);
 
   await page.setViewportSize({ width: 390, height: 844 });
   const dimensions = await page.evaluate(() => ({
@@ -89,6 +221,30 @@ test("filters and paginates the AI service directory", async ({ page }) => {
   await expect(page.locator(".recommendation-card")).toHaveCount(9);
   await expect(page.locator("#ai-service-result-count")).toHaveText("共 47 个结果");
   await expect(page.locator("#ai-service-pages button")).toHaveCount(6);
+  const chromeCompatibility = await page.evaluate(() => ({
+    search: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-search input")).fontSize),
+    filter: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-filters button")).fontSize),
+    title: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-card h3")).fontSize),
+    domain: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-card > code")).fontSize),
+    description: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-card > p")).fontSize),
+    tag: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-tags span")).fontSize),
+    source: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-source")).fontSize),
+    action: Number.parseFloat(getComputedStyle(document.querySelector(".recommendation-card > a")).fontSize),
+    scrollbarWidth: getComputedStyle(document.documentElement).scrollbarWidth,
+    webkitScrollbarDisplay: getComputedStyle(document.documentElement, "::-webkit-scrollbar").display
+  }));
+  expect(chromeCompatibility.search).toBeGreaterThanOrEqual(15);
+  expect(chromeCompatibility.filter).toBeGreaterThanOrEqual(14);
+  expect(chromeCompatibility.title).toBeGreaterThanOrEqual(20);
+  expect(chromeCompatibility.domain).toBeGreaterThanOrEqual(14);
+  expect(chromeCompatibility.description).toBeGreaterThanOrEqual(15);
+  expect(chromeCompatibility.tag).toBeGreaterThanOrEqual(13);
+  expect(chromeCompatibility.source).toBeGreaterThanOrEqual(13);
+  expect(chromeCompatibility.action).toBeGreaterThanOrEqual(15);
+  expect(
+    chromeCompatibility.scrollbarWidth === "none"
+      || chromeCompatibility.webkitScrollbarDisplay === "none"
+  ).toBeTruthy();
 
   await page.locator('#ai-service-filters button[data-category="shop"]').click();
   await expect(page.locator(".recommendation-card")).toHaveCount(9);

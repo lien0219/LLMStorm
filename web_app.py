@@ -133,6 +133,10 @@ async def ai_services(_: web.Request) -> web.FileResponse:
     return web.FileResponse(STATIC_DIR / "ai-services.html")
 
 
+async def support(_: web.Request) -> web.FileResponse:
+    return web.FileResponse(STATIC_DIR / "support.html")
+
+
 async def health(_: web.Request) -> web.Response:
     return web.json_response({"ok": True, "service": "LLMStorm", "version": VERSION})
 
@@ -417,6 +421,7 @@ def create_app(
     app.router.add_get("/", index)
     app.router.add_get("/sites", site_recommendations)
     app.router.add_get("/ai-services", ai_services)
+    app.router.add_get("/support", support)
     app.router.add_get("/api/health", health)
     app.router.add_get("/api/config", public_config)
     app.router.add_get("/api/catalog", model_catalog)

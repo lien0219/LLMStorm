@@ -10,7 +10,7 @@
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
+<body class="load-test-page">
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
 
@@ -25,6 +25,7 @@
       <a class="active" href="/" aria-current="page"><span></span><b data-i18n="navLoadTest">压测工具</b></a>
       <a href="/sites"><span></span><b data-i18n="navSites">站点推荐</b></a>
       <a href="/ai-services"><span></span><b data-i18n="navAiServices">AI 服务</b></a>
+      <a href="/support"><span></span><b data-i18n="navSupport">支持与联系</b></a>
     </nav>
     <div class="header-actions">
       <div class="language-switch" role="group" aria-label="Language">
@@ -348,10 +349,11 @@
     </section>
   </main>
 
-  <footer><span>LLMSTORM / LOCAL LOAD TESTER</span><span data-i18n="authorizedOnly">请仅在授权范围内进行压力测试</span></footer>
+  <footer><span class="footer-signature">LLMSTORM / LOCAL LOAD TESTER <b class="footer-version" data-app-version hidden></b></span><span data-i18n="authorizedOnly">请仅在授权范围内进行压力测试</span></footer>
   <noscript><div class="noscript" data-i18n="noScript">此页面需要启用 JavaScript 才能运行测试。</div></noscript>
   <div id="toast" class="toast" role="status"></div>
   <script src="/static/i18n.js" defer></script>
+  <script type="module" src="/static/floating-nav.js"></script>
   <script type="module" src="/static/app.js"></script>
 </body>
 </html>

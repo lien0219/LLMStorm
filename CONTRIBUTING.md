@@ -26,3 +26,11 @@ tests. Existing core orchestration should not gain provider-specific branches.
 Do not include real API keys, relay URLs, production outputs, or customer data
 in tests, screenshots, issues, or pull requests. Tests should use a local mock
 upstream.
+
+## Questions and project contact
+
+Use GitHub Issues for reproducible bugs and feature proposals so the discussion
+can benefit other contributors. For private project questions or sponsorship,
+contact the maintainer via QQ `1824851183` or email
+[1824851183@qq.com](mailto:1824851183@qq.com). See [SUPPORT.md](SUPPORT.md) for
+the contact and sponsorship policy.

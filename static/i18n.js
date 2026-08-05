@@ -14,6 +14,35 @@
       navLoadTest: "压测工具",
       navSites: "站点推荐",
       navAiServices: "AI 服务",
+      navSupport: "支持与联系",
+      floatingNavOpen: "展开导航",
+      supportMetaTitle: "支持与联系 · LLMStorm",
+      supportMetaDescription: "赞助 LLMStorm 项目或联系项目维护者。",
+      supportEyebrow: "SUPPORT THE STORM",
+      supportTitle: "支持与联系",
+      sponsorSectionLabel: "SPONSOR",
+      sponsorTitle: "赞助项目",
+      sponsorDescription: "如果 LLMStorm 帮你更快地摸清了服务容量，欢迎支持项目的持续开发与维护。",
+      sponsorDirectTitle: "直接赞助",
+      sponsorDirectBody: "如需一次性或长期赞助，请先通过 QQ 或邮箱联系，以获取当前可用的赞助方式。",
+      sponsorContactButton: "联系赞助",
+      feedbackTitle: "反馈与建议",
+      feedbackBody: "发现问题或有功能想法，欢迎提交反馈，帮助项目持续改进。",
+      feedbackButton: "提交反馈",
+      feedbackDialogTitle: "通过 QQ 提交反馈",
+      feedbackDialogBody: "添加下方 QQ，联系时请简要说明问题或建议。",
+      closeDialog: "关闭",
+      sponsorNote: "本站不收集付款信息。赞助前请先联系确认方式，谨防非官方账号。",
+      contactSectionLabel: "CONTACT",
+      contactTitle: "联系维护者",
+      contactDescription: "问题反馈、功能建议、赞助合作与项目交流，都可以通过以下方式联系。",
+      contactQqLabel: "QQ",
+      contactEmailLabel: "邮箱",
+      copyContact: "复制",
+      copiedContact: "已复制",
+      emailContact: "发送邮件",
+      contactResponseNote: "联系时请简要说明来意；问题反馈建议附上版本、运行方式和复现步骤。",
+      supportFooter: "感谢每一位使用者与支持者",
       directoryPreparing: "内容筹备中",
       siteDirectoryEyebrow: "RESOURCE DIRECTORY",
       siteDirectoryTitle: "站点推荐",
@@ -296,6 +325,35 @@
       navLoadTest: "Load tester",
       navSites: "Recommended sites",
       navAiServices: "AI services",
+      navSupport: "Support",
+      floatingNavOpen: "Open navigation",
+      supportMetaTitle: "Support & contact · LLMStorm",
+      supportMetaDescription: "Sponsor LLMStorm or contact the project maintainer.",
+      supportEyebrow: "SUPPORT THE STORM",
+      supportTitle: "Support & contact",
+      sponsorSectionLabel: "SPONSOR",
+      sponsorTitle: "Sponsor the project",
+      sponsorDescription: "If LLMStorm helped you understand your service capacity faster, consider supporting its continued development and maintenance.",
+      sponsorDirectTitle: "Direct sponsorship",
+      sponsorDirectBody: "For one-time or ongoing sponsorship, contact the maintainer via QQ or email to get the currently available options.",
+      sponsorContactButton: "Discuss sponsorship",
+      feedbackTitle: "Feedback & ideas",
+      feedbackBody: "Found an issue or have an idea? Share it to help improve the project.",
+      feedbackButton: "Send feedback",
+      feedbackDialogTitle: "Send feedback via QQ",
+      feedbackDialogBody: "Add the QQ account below and briefly describe your issue or suggestion.",
+      closeDialog: "Close",
+      sponsorNote: "This site never collects payment details. Confirm sponsorship options through the contacts below and beware of impersonators.",
+      contactSectionLabel: "CONTACT",
+      contactTitle: "Contact the maintainer",
+      contactDescription: "Use either channel for bug reports, feature ideas, sponsorship, collaboration, or general project questions.",
+      contactQqLabel: "QQ",
+      contactEmailLabel: "Email",
+      copyContact: "Copy",
+      copiedContact: "Copied",
+      emailContact: "Send email",
+      contactResponseNote: "Briefly state the reason for contacting us. For bug reports, include the version, deployment method, and reproduction steps.",
+      supportFooter: "Thank you to every user and supporter",
       directoryPreparing: "Coming soon",
       siteDirectoryEyebrow: "RESOURCE DIRECTORY",
       siteDirectoryTitle: "Recommended sites",
@@ -637,6 +695,24 @@
     window.dispatchEvent(new CustomEvent("llmstorm:localechange", { detail: { locale } }));
   }
 
+  async function loadVersion() {
+    const targets = document.querySelectorAll("[data-app-version]");
+    if (!targets.length) return;
+    try {
+      const response = await fetch("/api/health", { headers: { Accept: "application/json" } });
+      if (!response.ok) return;
+      const payload = await response.json();
+      const version = String(payload.version || "").trim().replace(/^v/i, "");
+      if (!version) return;
+      targets.forEach((target) => {
+        target.textContent = `v${version}`;
+        target.hidden = false;
+      });
+    } catch {
+      // The rest of the page remains available when version lookup fails.
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-locale]").forEach((button) => {
       button.addEventListener("click", () => setLocale(button.dataset.locale));
@@ -645,6 +721,7 @@
       element.addEventListener("input", () => { element.dataset.userEdited = "true"; }, { once: true });
     });
     apply();
+    loadVersion();
   });
 
   window.LLMStormI18n = { t, apply, setLocale, getLocale: () => locale };

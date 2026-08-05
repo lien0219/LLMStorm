@@ -7,6 +7,7 @@ import unittest
 from aiohttp import ClientSession, web
 from aiohttp.test_utils import TestServer
 
+from llmstorm import __version__
 from web_app import create_app
 
 
@@ -89,6 +90,7 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         config = await self.session.get(self.server.make_url("/api/config"))
         catalog = await self.session.get(self.server.make_url("/api/catalog"))
         self.assertEqual(health.status, 200)
+        self.assertEqual((await health.json())["version"], __version__)
         self.assertEqual((await config.json())["maxConcurrency"], 50)
         config_body = await config.json()
         self.assertEqual(config_body["successThreshold"], 95)
@@ -101,10 +103,15 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
     async def test_navigation_pages_are_served(self) -> None:
         sites = await self.session.get(self.server.make_url("/sites"))
         ai_services = await self.session.get(self.server.make_url("/ai-services"))
+        support = await self.session.get(self.server.make_url("/support"))
         self.assertEqual(sites.status, 200)
         self.assertEqual(ai_services.status, 200)
+        self.assertEqual(support.status, 200)
         self.assertIn("站点推荐", await sites.text())
         self.assertIn("AI 服务", await ai_services.text())
+        support_body = await support.text()
+        self.assertIn("支持与联系", support_body)
+        self.assertIn("1824851183@qq.com", support_body)
 
     async def test_site_quality_and_exposed_upstream_analysis(self) -> None:
         response = await self.session.post(

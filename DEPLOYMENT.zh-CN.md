@@ -31,6 +31,9 @@ git push origin v1.1.0
 GitHub Actions 会自动完成打包与发布。GHCR 包首次创建后可能是私有状态；如需服务器
 匿名拉取，请进入 GitHub 包设置，将可见性修改为 **Public**。
 
+网页页脚会通过 `/api/health` 读取 `llmstorm/__init__.py` 中的版本号，因此发布并部署
+新版本后会自动同步显示，无需修改任何前端页面。
+
 ## 部署到 Linux 服务器
 
 服务器需要安装 Docker Engine 和 Compose v2，并建议使用 Nginx、Caddy 或

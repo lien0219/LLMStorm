@@ -14,7 +14,7 @@
 
 [简体中文](README.md) · [English](README.en.md)
 
-[Quick start](#quick-start) · [Highlights](#highlights) · [Protocol matrix](#protocols) · [How it works](#how-it-works) · [Deployment](DEPLOYMENT.md) · [Contributing](CONTRIBUTING.md)
+[Quick start](#quick-start) · [Highlights](#highlights) · [Protocol matrix](#protocols) · [How it works](#how-it-works) · [Support](#support) · [Deployment](DEPLOYMENT.md) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -153,6 +153,20 @@ npm run test:e2e
 ```
 
 </details>
+
+<a id="support"></a>
+
+## 💚 Support and contact
+
+If LLMStorm helped you understand your service capacity faster, you can support its continued maintenance by starring, sharing, reporting issues, or sponsoring the project.
+
+| Channel | Details | Best for |
+| --- | --- | --- |
+| QQ | `1824851183` | Quick questions and sponsorship inquiries |
+| Email | [1824851183@qq.com](mailto:1824851183@qq.com) | Bug reports, feature ideas, and collaboration |
+| GitHub | [lien0219/LLMStorm](https://github.com/lien0219/LLMStorm) | Stars, issues, and pull requests |
+
+For one-time or ongoing sponsorship, contact the maintainer via QQ or email to confirm the currently available options. The project never collects payment details through its website; beware of impersonators. See [SUPPORT.md](SUPPORT.md) for the full policy, or visit `/support` in a running instance.
 
 ## 🤝 Contributing and license
 

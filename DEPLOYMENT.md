@@ -35,6 +35,10 @@ The workflow publishes the versioned images automatically. The GHCR package may
 initially be private; open the package settings on GitHub and change its
 visibility to **Public** if anonymous server pulls are required.
 
+The website footer reads the version from `/api/health`, whose source of truth is
+`llmstorm/__init__.py`. After a new release is published and deployed, every page
+shows the new version automatically without requiring frontend edits.
+
 ## Deploy on a Linux server
 
 Requirements: Docker Engine with Compose v2 and a reverse proxy or Cloudflare

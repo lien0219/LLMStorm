@@ -14,7 +14,7 @@
 
 [简体中文](README.md) · [English](README.en.md)
 
-[快速开始](#quick-start) · [核心能力](#highlights) · [支持矩阵](#protocols) · [工作原理](#how-it-works) · [生产部署](DEPLOYMENT.zh-CN.md) · [参与贡献](CONTRIBUTING.md)
+[快速开始](#quick-start) · [核心能力](#highlights) · [支持矩阵](#protocols) · [工作原理](#how-it-works) · [支持项目](#support) · [生产部署](DEPLOYMENT.zh-CN.md) · [参与贡献](CONTRIBUTING.md)
 
 </div>
 
@@ -153,6 +153,20 @@ npm run test:e2e
 ```
 
 </details>
+
+<a id="support"></a>
+
+## 💚 支持项目与联系
+
+如果 LLMStorm 帮你更快地摸清了服务容量，欢迎通过 Star、分享、反馈或赞助支持项目持续维护。
+
+| 方式 | 信息 | 适合场景 |
+| --- | --- | --- |
+| QQ | `1824851183` | 即时沟通、赞助咨询 |
+| 邮箱 | [1824851183@qq.com](mailto:1824851183@qq.com) | 问题反馈、功能建议、合作说明 |
+| GitHub | [lien0219/LLMStorm](https://github.com/lien0219/LLMStorm) | Star、Issue 与 Pull Request |
+
+一次性或长期赞助请先通过 QQ 或邮箱联系，以确认当前可用的赞助方式。项目不会在网页中收集付款信息，请谨防非官方账号。完整说明见 [SUPPORT.md](SUPPORT.md)，在线运行时也可访问 `/support` 页面。
 
 ## 🤝 贡献与许可
 
