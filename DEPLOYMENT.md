@@ -17,8 +17,8 @@ version tag, and manual dispatch.
 
 | Git event | Example image tags | Intended use |
 | --- | --- | --- |
-| Push to `main` | `main`, `main-v1.3.1`, `sha-4e1577b` | Staging and commit-level diagnosis |
-| Push tag `v1.3.1` | `v1.3.1`, `1.3.1`, `1.3`, `1`, `latest`, `sha-4e1577b` | Production releases |
+| Push to `main` | `main`, `main-v1.3.2`, `sha-4e1577b` | Staging and commit-level diagnosis |
+| Push tag `v1.3.2` | `v1.3.2`, `1.3.2`, `1.3`, `1`, `latest`, `sha-4e1577b` | Production releases |
 
 The workflow builds `linux/amd64` and `linux/arm64`, attaches OCI metadata,
 generates an SBOM and provenance attestation, and uses GitHub Actions cache.
@@ -31,8 +31,8 @@ A release tag must match `llmstorm/__init__.py`; a mismatch stops publication.
 3. Create and push the matching annotated tag:
 
 ```bash
-git tag -a v1.3.1 -m "LLMStorm v1.3.1"
-git push origin v1.3.1
+git tag -a v1.3.2 -m "LLMStorm v1.3.2"
+git push origin v1.3.2
 ```
 
 The workflow publishes the versioned images automatically. The GHCR package may
@@ -64,7 +64,7 @@ curl --fail http://127.0.0.1:8765/api/health
 curl --fail http://127.0.0.1:8765/api/stats
 ```
 
-Keep `LLMSTORM_VERSION` pinned to an exact version such as `1.3.1` in
+Keep `LLMSTORM_VERSION` pinned to an exact version such as `1.3.2` in
 production. Use `main` only for staging.
 
 If the package remains private, create a GitHub token with only `read:packages`
@@ -100,7 +100,7 @@ used.
 | Variable | Production default | Purpose |
 | --- | ---: | --- |
 | `LLMSTORM_IMAGE` | `ghcr.io/lien0219/llmstorm` | Registry image name |
-| `LLMSTORM_VERSION` | `1.3.1` | Image tag to deploy |
+| `LLMSTORM_VERSION` | `1.3.2` | Image tag to deploy |
 | `LLMSTORM_BIND_ADDRESS` | `127.0.0.1` | Host interface exposed to the proxy |
 | `LLMSTORM_HOST_PORT` | `8765` | Host-side port |
 | `LLMSTORM_PUBLIC_MODE` | `1` | HTTPS enforcement and SSRF protection |

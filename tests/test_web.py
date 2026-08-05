@@ -101,6 +101,10 @@ class WebTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(health.headers["X-Content-Type-Options"], "nosniff")
         self.assertEqual(health.headers["Cache-Control"], "no-store")
         self.assertIn("frame-ancestors 'none'", health.headers["Content-Security-Policy"])
+        self.assertIn(
+            "script-src 'self' https://static.cloudflareinsights.com",
+            health.headers["Content-Security-Policy"],
+        )
 
     async def test_navigation_pages_are_served(self) -> None:
         sites = await self.session.get(self.server.make_url("/sites"))
